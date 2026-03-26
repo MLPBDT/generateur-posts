@@ -17,8 +17,9 @@
   .sub { margin-top: 10px; color: var(--muted); font-size: 15px; font-weight: 300; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; }
   label { display: block; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-  input, select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; padding: 12px 16px; outline: none; transition: border-color .2s; }
-  input:focus, select:focus { border-color: var(--accent); }
+  input, select, textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; padding: 12px 16px; outline: none; transition: border-color .2s; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 80px; }
   select option { background: var(--surface); }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media(max-width: 520px) { .grid2 { grid-template-columns: 1fr; } }
@@ -27,18 +28,50 @@
   .platforms { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
   .platform-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; padding: 7px 16px; cursor: pointer; transition: all .2s; text-transform: uppercase; }
   .platform-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
-  .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 28px; text-align: center; cursor: pointer; transition: all .2s; position: relative; min-height: 100px; }
+
+  /* Mode selector */
+  .mode-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+  @media(max-width:520px) { .mode-tabs { grid-template-columns: 1fr 1fr; } }
+  .mode-tab { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px 8px; text-align: center; cursor: pointer; transition: all .2s; }
+  .mode-tab:hover { border-color: var(--accent); }
+  .mode-tab.active { background: rgba(200,241,53,.08); border-color: var(--accent); }
+  .mode-tab .tab-icon { font-size: 22px; margin-bottom: 5px; }
+  .mode-tab .tab-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text); }
+  .mode-tab .tab-desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .mode-tab.active .tab-title { color: var(--accent); }
+
+  .mode-panel { display: none; }
+  .mode-panel.active { display: block; }
+
+  /* Upload zone */
+  .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all .2s; position: relative; min-height: 90px; }
   .upload-zone:hover { border-color: var(--accent); }
-  .upload-zone.has-image { border-style: solid; border-color: var(--accent); padding: 0; overflow: hidden; }
   .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; padding: 0; }
-  .upload-icon { font-size: 32px; margin-bottom: 8px; }
   .upload-text { color: var(--muted); font-size: 14px; }
   .upload-text span { color: var(--accent); }
-  .preview-img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 10px; display: none; }
-  .preview-img.show { display: block; }
-  .remove-photo { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,.7); border: none; color: #fff; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; display: none; z-index: 2; }
-  .remove-photo.show { display: block; }
-  .btn-generate { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 1px; padding: 18px; cursor: pointer; transition: all .2s; text-transform: uppercase; }
+
+  .photos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-top: 14px; }
+  .photo-thumb { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 1; border: 1px solid var(--border); }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo-thumb .remove-one { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,.8); border: none; color: #fff; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .photos-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .photo-count-label { font-size: 12px; color: var(--accent); font-family: 'Syne', sans-serif; font-weight: 700; }
+  .clear-all-btn { background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 12px; padding: 5px 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s; }
+  .clear-all-btn:hover { border-color: #ff6b6b; color: #ff6b6b; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .toggle-row:first-child { padding-top: 0; }
+  .toggle-label { font-size: 14px; color: var(--text); }
+  .toggle-label small { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 24px; cursor: pointer; transition: .2s; }
+  .toggle-slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: .2s; }
+  .toggle input:checked + .toggle-slider { background: var(--accent); }
+  .toggle input:checked + .toggle-slider:before { transform: translateX(18px); background: #000; }
+
+  .btn-generate { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 1px; padding: 18px; cursor: pointer; transition: all .2s; text-transform: uppercase; margin-top: 4px; }
   .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(200,241,53,.25); }
   .btn-generate:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
   .loader { display: none; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; padding: 16px 0; }
@@ -47,23 +80,37 @@
   .dots span:nth-child(2) { animation-delay: .15s; }
   .dots span:nth-child(3) { animation-delay: .3s; }
   @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: .3; } 40% { transform: translateY(-6px); opacity: 1; } }
+
   .results { display: none; }
   .results.show { display: block; }
+
   .post-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; animation: fadeUp .4s ease both; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  .post-photo { width: 100%; max-height: 220px; object-fit: cover; display: none; }
-  .post-photo.show { display: block; }
-  .post-body { padding: 24px; }
-  .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .post-photo-wrap { width: 100%; height: 240px; background: var(--bg); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .post-photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .post-photo-wrap.generating { background: linear-gradient(135deg, #0a0a0f, #13131a); }
+  .generating-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+  .generating-overlay .gen-icon { font-size: 32px; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:.4;transform:scale(1);} 50%{opacity:1;transform:scale(1.1);} }
+  .generating-overlay .gen-text { font-size: 13px; color: var(--muted); font-family: 'Syne', sans-serif; letter-spacing: 1px; }
+
+  .post-body { padding: 22px; }
+  .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
   .post-platform { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
-  .post-actions { display: flex; gap: 8px; }
-  .copy-btn, .dl-btn { background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 12px; padding: 5px 12px; cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif; }
-  .copy-btn:hover, .dl-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .post-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .copy-btn, .dl-btn, .regen-btn { background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 12px; padding: 5px 12px; cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif; }
+  .copy-btn:hover, .dl-btn:hover, .regen-btn:hover { border-color: var(--accent); color: var(--accent); }
   .copy-btn.copied { border-color: var(--accent); color: var(--accent); }
   .post-text { font-size: 15px; line-height: 1.7; white-space: pre-wrap; color: var(--text); }
+  .post-extra { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .post-extra-label { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .post-extra-text { font-size: 13px; color: var(--muted); line-height: 1.6; font-style: italic; }
+
   .error-box { background: #1a0a0a; border: 1px solid #3a1010; border-radius: 12px; color: #ff6b6b; padding: 16px; font-size: 14px; display: none; margin-top: 16px; }
   .error-box.show { display: block; }
   .section-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; margin-top: 28px; }
+  .info-box { background: rgba(200,241,53,.06); border: 1px solid rgba(200,241,53,.2); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .info-box strong { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -71,25 +118,129 @@
   <header>
     <div class="badge">✦ Propulsé par IA</div>
     <h1>Génère tes posts<br><span>réseaux sociaux</span></h1>
-    <p class="sub">Ajoute une photo, décris ton business — l'IA rédige tes contenus en secondes.</p>
+    <p class="sub">Texte, photo IA ou tes propres photos — des posts complets en secondes.</p>
   </header>
 
-  <div class="card">
-    <div class="field">
-      <label>Ta photo (optionnel)</label>
-      <div class="upload-zone" id="uploadZone">
-        <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto(event)" />
-        <img class="preview-img" id="previewImg" src="" alt="preview" />
-        <button class="remove-photo" id="removeBtn" onclick="removePhoto(event)">✕ Supprimer</button>
-        <div id="uploadPlaceholder">
-          <div class="upload-icon">📸</div>
-          <p class="upload-text">Glisse ta photo ici ou <span>clique pour choisir</span></p>
-          <p class="upload-text" style="font-size:12px;margin-top:4px;">L'IA génère des posts en lien avec ta photo</p>
+  <div class="mode-tabs">
+    <div class="mode-tab active" onclick="setMode('text')" id="tab-text">
+      <div class="tab-icon">✍️</div>
+      <div class="tab-title">Texte</div>
+      <div class="tab-desc">Texte uniquement</div>
+    </div>
+    <div class="mode-tab" onclick="setMode('aiphoto')" id="tab-aiphoto">
+      <div class="tab-icon">🤖</div>
+      <div class="tab-title">Photo IA</div>
+      <div class="tab-desc">Image générée</div>
+    </div>
+    <div class="mode-tab" onclick="setMode('myphoto')" id="tab-myphoto">
+      <div class="tab-icon">📸</div>
+      <div class="tab-title">Mes photos</div>
+      <div class="tab-desc">Tes propres photos</div>
+    </div>
+    <div class="mode-tab" onclick="setMode('both')" id="tab-both">
+      <div class="tab-icon">🚀</div>
+      <div class="tab-title">Complet</div>
+      <div class="tab-desc">Tout ensemble</div>
+    </div>
+  </div>
+
+  <!-- TEXTE -->
+  <div class="mode-panel active" id="panel-text">
+    <div class="info-box">L'IA génère <strong>uniquement le texte</strong> du post.</div>
+  </div>
+
+  <!-- PHOTO IA -->
+  <div class="mode-panel" id="panel-aiphoto">
+    <div class="info-box">L'IA génère <strong>une image</strong> adaptée à chaque post automatiquement. <strong>100% gratuit</strong> via Pollinations.ai.</div>
+    <div class="card">
+      <div class="field">
+        <label>Style des images</label>
+        <select id="imgStyle">
+          <option value="professional product photography, clean background, commercial">📦 Photo produit pro</option>
+          <option value="lifestyle photography, warm natural light, authentic">🌿 Lifestyle naturel</option>
+          <option value="minimalist flat lay, pastel colors, Instagram aesthetic" selected>✨ Flat lay minimaliste</option>
+          <option value="vibrant street photography, dynamic, urban">🏙️ Street dynamique</option>
+          <option value="luxury photography, elegant, high-end, cinematic lighting">💎 Luxe & élégance</option>
+          <option value="food photography, appetizing, professional lighting, restaurant">🍽️ Food photography</option>
+          <option value="fitness photography, energetic, gym, action">💪 Fitness & sport</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- MES PHOTOS -->
+  <div class="mode-panel" id="panel-myphoto">
+    <div class="info-box">Upload tes photos — l'IA génère un <strong>texte adapté à chaque photo</strong>.</div>
+    <div class="card">
+      <div class="field">
+        <label>Tes photos <span id="photoCount1" style="color:var(--accent);font-size:11px;"></span></label>
+        <div class="upload-zone">
+          <input type="file" id="photoInput1" accept="image/*" multiple onchange="handlePhotos(event,1)" />
+          <div style="font-size:28px;margin-bottom:6px;">📸</div>
+          <p class="upload-text">Glisse tes photos ou <span>clique pour choisir</span></p>
+          <p class="upload-text" style="font-size:11px;margin-top:3px;">Plusieurs photos acceptées (max 10)</p>
+        </div>
+        <div class="photos-grid" id="photosGrid1"></div>
+        <div class="photos-actions" id="photosActions1" style="display:none">
+          <span class="photo-count-label" id="photosLabel1"></span>
+          <button class="clear-all-btn" onclick="clearPhotos(1)">🗑 Tout supprimer</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- COMPLET -->
+  <div class="mode-panel" id="panel-both">
+    <div class="info-box">Le post complet : <strong>tes photos ou images IA</strong> + <strong>texte</strong> + <strong>description visuelle</strong> + <strong>hashtags</strong>.</div>
+    <div class="card">
+      <div class="field">
+        <label>Source des photos</label>
+        <div class="platforms" style="margin-bottom:16px;">
+          <button class="platform-btn active" id="srcMyBtn" onclick="setSrc('my')">📸 Mes photos</button>
+          <button class="platform-btn" id="srcAiBtn" onclick="setSrc('ai')">🤖 Générer avec IA</button>
+        </div>
+        <div id="srcMyPanel">
+          <div class="upload-zone">
+            <input type="file" id="photoInput2" accept="image/*" multiple onchange="handlePhotos(event,2)" />
+            <div style="font-size:24px;margin-bottom:6px;">📸</div>
+            <p class="upload-text">Glisse tes photos ou <span>clique pour choisir</span></p>
+          </div>
+          <div class="photos-grid" id="photosGrid2"></div>
+          <div class="photos-actions" id="photosActions2" style="display:none">
+            <span class="photo-count-label" id="photosLabel2"></span>
+            <button class="clear-all-btn" onclick="clearPhotos(2)">🗑 Tout supprimer</button>
+          </div>
+        </div>
+        <div id="srcAiPanel" style="display:none">
+          <div class="field" style="margin-top:12px;">
+            <label>Style des images IA</label>
+            <select id="imgStyle2">
+              <option value="professional product photography, clean background, commercial">📦 Photo produit pro</option>
+              <option value="lifestyle photography, warm natural light, authentic">🌿 Lifestyle naturel</option>
+              <option value="minimalist flat lay, pastel colors, Instagram aesthetic" selected>✨ Flat lay minimaliste</option>
+              <option value="vibrant street photography, dynamic, urban">🏙️ Street dynamique</option>
+              <option value="luxury photography, elegant, high-end, cinematic lighting">💎 Luxe & élégance</option>
+              <option value="food photography, appetizing, professional lighting">🍽️ Food photography</option>
+              <option value="fitness photography, energetic, action">💪 Fitness & sport</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Options</label>
+        <div class="toggle-row">
+          <div class="toggle-label">Description visuelle <small>Pour briefer un graphiste</small></div>
+          <label class="toggle"><input type="checkbox" id="toggleDesc" checked /><span class="toggle-slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">Hashtags séparés <small>Liste optimisée en plus du post</small></div>
+          <label class="toggle"><input type="checkbox" id="toggleHashtags" /><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMULAIRE COMMUN -->
   <div class="card">
     <div class="field">
       <label>Ton business / activité</label>
@@ -132,7 +283,7 @@
   </div>
 
   <button class="btn-generate" id="generateBtn" onclick="generate()">⚡ Générer mes posts</button>
-  <div class="loader" id="loader"><div class="dots"><span></span><span></span><span></span></div>L'IA rédige tes posts...</div>
+  <div class="loader" id="loader"><div class="dots"><span></span><span></span><span></span></div>L'IA crée tes posts...</div>
   <div class="error-box" id="errorBox"></div>
   <div class="results" id="results">
     <p class="section-title">Tes posts générés</p>
@@ -141,43 +292,70 @@
 </div>
 
 <script>
-  var uploadedPhotoDataUrl = null;
-  var uploadedPhotoDesc = null;
+  var currentMode = 'text';
+  var bothSrc = 'my';
+  var photos = { 1: [], 2: [] };
 
-  document.querySelectorAll('.platform-btn').forEach(function(btn) {
+  function setMode(mode) {
+    currentMode = mode;
+    ['text','aiphoto','myphoto','both'].forEach(function(m) {
+      document.getElementById('tab-' + m).classList.toggle('active', m === mode);
+      document.getElementById('panel-' + m).classList.toggle('active', m === mode);
+    });
+  }
+
+  function setSrc(src) {
+    bothSrc = src;
+    document.getElementById('srcMyBtn').classList.toggle('active', src === 'my');
+    document.getElementById('srcAiBtn').classList.toggle('active', src === 'ai');
+    document.getElementById('srcMyPanel').style.display = src === 'my' ? 'block' : 'none';
+    document.getElementById('srcAiPanel').style.display = src === 'ai' ? 'block' : 'none';
+  }
+
+  document.querySelectorAll('.platform-btn[data-p]').forEach(function(btn) {
     btn.addEventListener('click', function() { btn.classList.toggle('active'); });
   });
 
-  function handlePhoto(event) {
-    var file = event.target.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      uploadedPhotoDataUrl = e.target.result;
-      uploadedPhotoDesc = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
-      document.getElementById('previewImg').src = uploadedPhotoDataUrl;
-      document.getElementById('previewImg').classList.add('show');
-      document.getElementById('removeBtn').classList.add('show');
-      document.getElementById('uploadPlaceholder').style.display = 'none';
-      document.getElementById('uploadZone').classList.add('has-image');
-    };
-    reader.readAsDataURL(file);
+  function handlePhotos(event, slot) {
+    var files = Array.from(event.target.files);
+    if (!files.length) return;
+    files = files.slice(0, 10 - photos[slot].length);
+    var loaded = 0;
+    files.forEach(function(file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        photos[slot].push({ dataUrl: e.target.result, name: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ') });
+        loaded++;
+        if (loaded === files.length) renderGrid(slot);
+      };
+      reader.readAsDataURL(file);
+    });
+    event.target.value = '';
   }
 
-  function removePhoto(e) {
-    e.stopPropagation();
-    uploadedPhotoDataUrl = null;
-    uploadedPhotoDesc = null;
-    document.getElementById('previewImg').src = '';
-    document.getElementById('previewImg').classList.remove('show');
-    document.getElementById('removeBtn').classList.remove('show');
-    document.getElementById('uploadPlaceholder').style.display = 'block';
-    document.getElementById('uploadZone').classList.remove('has-image');
-    document.getElementById('photoInput').value = '';
+  function removePhoto(slot, i) { photos[slot].splice(i, 1); renderGrid(slot); }
+  function clearPhotos(slot) { photos[slot] = []; renderGrid(slot); }
+
+  function renderGrid(slot) {
+    var grid = document.getElementById('photosGrid' + slot);
+    var actions = document.getElementById('photosActions' + slot);
+    var countEl = document.getElementById('photoCount' + slot);
+    var labelEl = document.getElementById('photosLabel' + slot);
+    var n = photos[slot].length;
+    if (countEl) countEl.textContent = n ? '(' + n + ' photo' + (n>1?'s':'') + ')' : '';
+    if (labelEl) labelEl.textContent = n + ' photo' + (n>1?'s':'') + ' sélectionnée' + (n>1?'s':'');
+    if (actions) actions.style.display = n ? 'flex' : 'none';
+    grid.innerHTML = '';
+    photos[slot].forEach(function(p, i) {
+      var d = document.createElement('div');
+      d.className = 'photo-thumb';
+      d.innerHTML = '<img src="' + p.dataUrl + '" /><button class="remove-one" onclick="removePhoto(' + slot + ',' + i + ')">✕</button>';
+      grid.appendChild(d);
+    });
   }
 
   function getSelectedPlatforms() {
-    return Array.from(document.querySelectorAll('.platform-btn.active')).map(function(b) { return b.dataset.p; });
+    return Array.from(document.querySelectorAll('.platform-btn[data-p].active')).map(function(b) { return b.dataset.p; });
   }
 
   function showError(msg) {
@@ -186,24 +364,61 @@
     el.classList.add('show');
   }
 
+  function needsAiImages() {
+    return currentMode === 'aiphoto' || (currentMode === 'both' && bothSrc === 'ai');
+  }
+
+  function needsMyPhotos() {
+    return currentMode === 'myphoto' || (currentMode === 'both' && bothSrc === 'my');
+  }
+
+  function getActivePhotos() {
+    if (currentMode === 'myphoto') return photos[1];
+    if (currentMode === 'both' && bothSrc === 'my') return photos[2];
+    return [];
+  }
+
+  function getImgStyle() {
+    if (currentMode === 'aiphoto') return document.getElementById('imgStyle').value;
+    if (currentMode === 'both' && bothSrc === 'ai') return document.getElementById('imgStyle2').value;
+    return '';
+  }
+
   async function generate() {
     var business = document.getElementById('business').value.trim();
     var promo = document.getElementById('promo').value.trim();
     var tone = document.getElementById('tone').value;
-    var count = document.getElementById('count').value;
+    var count = parseInt(document.getElementById('count').value);
     var platforms = getSelectedPlatforms();
 
     document.getElementById('errorBox').classList.remove('show');
     if (!business) { showError('Décris ton business pour continuer.'); return; }
     if (!platforms.length) { showError('Sélectionne au moins une plateforme.'); return; }
 
+    var activePhotos = getActivePhotos();
+    if (needsMyPhotos() && activePhotos.length === 0) { showError('Ajoute au moins une photo.'); return; }
+
     document.getElementById('generateBtn').disabled = true;
     document.getElementById('loader').classList.add('show');
     document.getElementById('results').classList.remove('show');
 
-    var photoLine = uploadedPhotoDesc ? '- Une photo a été uploadée ("' + uploadedPhotoDesc + '"). Génère des posts en lien avec cette photo.\n' : '';
-    var promoLine = promo ? ('- Promo/message : ' + promo + '\n') : '';
-    var prompt = 'Tu es un expert en marketing digital.\n\nGénère exactement ' + count + ' posts pour :\n- Business : ' + business + '\n- Plateformes : ' + platforms.join(', ') + '\n' + promoLine + photoLine + '- Ton : ' + tone + '\n\nVarie les angles, adapte à chaque plateforme, inclus emojis et appel à l\'action.\n\nRéponds UNIQUEMENT en JSON valide sans backticks :\n{"posts": [{"platform": "nom", "content": "texte"}, ...]}';
+    var withDesc = currentMode === 'both' && document.getElementById('toggleDesc').checked;
+    var withHashtags = currentMode === 'both' && document.getElementById('toggleHashtags').checked;
+    var withAiImg = needsAiImages();
+
+    var promoLine = promo ? '- Promo/message : ' + promo + '\n' : '';
+    var photoLine = activePhotos.length > 0
+      ? '- ' + activePhotos.length + ' photo(s) uploadée(s) : ' + activePhotos.map(function(p){ return '"'+p.name+'"'; }).join(', ') + '.\n'
+      : '';
+    var aiImgLine = withAiImg ? '- Pour chaque post, génère un champ "image_prompt" : un prompt en anglais (max 20 mots) décrivant une image à générer pour illustrer ce post, adaptée au business. Style imposé : ' + getImgStyle() + '.\n' : '';
+
+    var extraFields = '';
+    if (withAiImg) extraFields += ', "image_prompt": "prompt anglais"';
+    if (withDesc) extraFields += ', "visual_desc": "description visuelle"';
+    if (withHashtags) extraFields += ', "hashtags": "#tag1 #tag2"';
+    if (activePhotos.length > 0) extraFields += ', "photo_index": 0';
+
+    var prompt = 'Tu es un expert en marketing digital.\n\nGénère exactement ' + count + ' posts pour :\n- Business : ' + business + '\n- Plateformes : ' + platforms.join(', ') + '\n' + promoLine + photoLine + aiImgLine + '- Ton : ' + tone + '\n\nVarie les angles, adapte à chaque plateforme, inclus emojis et appel à l\'action.\n\nRéponds UNIQUEMENT en JSON valide sans backticks :\n{"posts": [{"platform": "nom", "content": "texte"' + extraFields + '}, ...]}';
 
     try {
       var res = await fetch('/api/generate', {
@@ -216,7 +431,7 @@
       var text = (data.content || []).map(function(b) { return b.text || ''; }).join('');
       var clean = text.replace(/```json|```/g, '').trim();
       var parsed = JSON.parse(clean);
-      renderPosts(parsed.posts || []);
+      renderPosts(parsed.posts || [], activePhotos);
     } catch(e) {
       showError('Erreur : ' + (e.message || 'Réessaie dans quelques instants.'));
     } finally {
@@ -225,33 +440,110 @@
     }
   }
 
-  function renderPosts(posts) {
+  function buildPollinationsUrl(prompt) {
+    var encoded = encodeURIComponent(prompt + ', no text, no watermark');
+    return 'https://image.pollinations.ai/prompt/' + encoded + '?width=1080&height=1080&nologo=true&seed=' + Math.floor(Math.random()*99999);
+  }
+
+  function renderPosts(posts, activePhotos) {
     var container = document.getElementById('postsContainer');
     container.innerHTML = '';
     if (!posts.length) { showError('Aucun post généré. Réessaie.'); return; }
+
     posts.forEach(function(post, i) {
       var card = document.createElement('div');
       card.className = 'post-card';
       card.style.animationDelay = (i * 0.08) + 's';
-      var photoHtml = uploadedPhotoDataUrl ? '<img class="post-photo show" src="' + uploadedPhotoDataUrl + '" alt="photo" />' : '';
-      var dlBtn = uploadedPhotoDataUrl ? '<button class="dl-btn" onclick="downloadPhoto(' + i + ')">⬇ Photo</button>' : '';
-      card.innerHTML = photoHtml + '<div class="post-body"><div class="post-header"><span class="post-platform">' + escHtml(post.platform) + '</span><div class="post-actions">' + dlBtn + '<button class="copy-btn" onclick="copyPost(this,\'post-' + i + '\')">Copier</button></div></div><div class="post-text" id="post-' + i + '">' + escHtml(post.content) + '</div></div>';
+      card.id = 'card-' + i;
+
+      var photoHtml = '';
+      var dlBtn = '';
+      var regenBtn = '';
+
+      if (activePhotos.length > 0) {
+        var idx = (typeof post.photo_index === 'number' && post.photo_index >= 0 && post.photo_index < activePhotos.length) ? post.photo_index : (i % activePhotos.length);
+        photoHtml = '<div class="post-photo-wrap"><img src="' + activePhotos[idx].dataUrl + '" /></div>';
+        dlBtn = '<button class="dl-btn" onclick="dlMyPhoto(' + idx + ',' + i + ')">⬇ Photo</button>';
+      } else if (post.image_prompt) {
+        var imgUrl = buildPollinationsUrl(post.image_prompt);
+        photoHtml = '<div class="post-photo-wrap generating" id="photowrap-' + i + '"><div class="generating-overlay"><div class="gen-icon">🎨</div><div class="gen-text">Génération en cours...</div></div></div>';
+        regenBtn = '<button class="regen-btn" onclick="regenImage(' + i + ', this)" data-prompt="' + escAttr(post.image_prompt) + '">🔄 Nouvelle image</button>';
+        dlBtn = '<button class="dl-btn" id="dlbtn-' + i + '" style="display:none" onclick="dlAiPhoto(' + i + ')">⬇ Image</button>';
+        setTimeout(function(cardIndex, url) {
+          loadAiImage(cardIndex, url);
+        }.bind(null, i, imgUrl), i * 300);
+      }
+
+      var descHtml = post.visual_desc ? '<div class="post-extra"><div class="post-extra-label">📐 Description visuelle</div><div class="post-extra-text">' + escHtml(post.visual_desc) + '</div></div>' : '';
+      var hashHtml = post.hashtags ? '<div class="post-extra"><div class="post-extra-label"># Hashtags</div><div class="post-extra-text">' + escHtml(post.hashtags) + '</div></div>' : '';
+
+      card.innerHTML = photoHtml +
+        '<div class="post-body">' +
+          '<div class="post-header">' +
+            '<span class="post-platform">' + escHtml(post.platform) + '</span>' +
+            '<div class="post-actions">' + regenBtn + dlBtn + '<button class="copy-btn" onclick="copyPost(this,\'post-' + i + '\')">Copier</button></div>' +
+          '</div>' +
+          '<div class="post-text" id="post-' + i + '">' + escHtml(post.content) + '</div>' +
+          descHtml + hashHtml +
+        '</div>';
+
       container.appendChild(card);
     });
+
     document.getElementById('results').classList.add('show');
   }
 
-  function downloadPhoto(i) {
-    if (!uploadedPhotoDataUrl) return;
+  function loadAiImage(i, url) {
+    var wrap = document.getElementById('photowrap-' + i);
+    if (!wrap) return;
+    var img = new Image();
+    img.onload = function() {
+      wrap.innerHTML = '';
+      wrap.classList.remove('generating');
+      wrap.appendChild(img);
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+      var dlBtn = document.getElementById('dlbtn-' + i);
+      if (dlBtn) { dlBtn.style.display = ''; dlBtn.dataset.url = url; }
+    };
+    img.onerror = function() {
+      if (wrap) wrap.innerHTML = '<div class="generating-overlay"><div class="gen-icon">❌</div><div class="gen-text">Erreur — clique sur 🔄</div></div>';
+    };
+    img.src = url;
+  }
+
+  function regenImage(i, btn) {
+    var prompt = btn.dataset.prompt;
+    var wrap = document.getElementById('photowrap-' + i);
+    if (!wrap) return;
+    wrap.classList.add('generating');
+    wrap.innerHTML = '<div class="generating-overlay"><div class="gen-icon">🎨</div><div class="gen-text">Nouvelle génération...</div></div>';
+    var newUrl = buildPollinationsUrl(prompt);
+    var dlBtn = document.getElementById('dlbtn-' + i);
+    if (dlBtn) dlBtn.style.display = 'none';
+    setTimeout(function() { loadAiImage(i, newUrl); }, 100);
+  }
+
+  function dlAiPhoto(i) {
+    var dlBtn = document.getElementById('dlbtn-' + i);
+    if (!dlBtn || !dlBtn.dataset.url) return;
     var a = document.createElement('a');
-    a.href = uploadedPhotoDataUrl;
-    a.download = 'photo-post-' + (i+1) + '.jpg';
+    a.href = dlBtn.dataset.url;
+    a.download = 'post-ia-' + (i+1) + '.jpg';
+    a.target = '_blank';
     a.click();
   }
 
-  function escHtml(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  function dlMyPhoto(photoIdx, postIdx) {
+    var slot = currentMode === 'myphoto' ? 1 : 2;
+    if (!photos[slot][photoIdx]) return;
+    var a = document.createElement('a');
+    a.href = photos[slot][photoIdx].dataUrl;
+    a.download = 'photo-post-' + (postIdx+1) + '.jpg';
+    a.click();
   }
+
+  function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escAttr(str) { return String(str).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
   function copyPost(btn, id) {
     var text = document.getElementById(id).innerText;
