@@ -704,76 +704,29 @@ async function loadAiImage(i, prompt) {
   var wrap = document.getElementById('photowrap-'+i);
   if (!wrap) return;
 
-  // Update loading message
-  wrap.innerHTML = '<div class="generating-overlay"><div class="gen-icon">🎨</div><div class="gen-text">Génération en cours...</div><div class="gen-prompt-preview" style="font-size:11px;color:#666;margin-top:4px;padding:0 20px;text-align:center">'+escHtml(prompt.substring(0,50))+'...</div></div>';
+  wrap.innerHTML = '<div class="generating-overlay"><div class="gen-icon">🎨</div><div class="gen-text">Génération en cours... (20-40s)</div></div>';
   wrap.classList.add('generating');
 
-  var seed = Math.floor(Math.random() * 99999);
-  var cleanPrompt = prompt + ', high quality, no text, no watermark';
-
-  // Try Pollinations via server proxy first, then fallback to direct
   try {
     var res = await fetch('/api/image', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ prompt: cleanPrompt })
+      body: JSON.stringify({ prompt: prompt })
     });
-    if (res.ok) {
-      var data = await res.json();
-      if (data.image && data.image.length > 100) {
-        showImage(i, wrap, data.image, data.image);
-        return;
-      }
-    }
-  } catch(e) { /* fallback below */ }
+    var data = await res.json();
+    if (!data.image) throw new Error(data.error || 'Pas d image');
 
-  // Fallback: load image directly in browser
-  var encoded = encodeURIComponent(cleanPrompt);
-  var sources = [
-    'https://image.pollinations.ai/prompt/' + encoded + '?width=1024&height=1024&nologo=true&seed=' + seed + '&model=flux',
-    'https://image.pollinations.ai/prompt/' + encoded + '?width=1024&height=1024&nologo=true&seed=' + (seed+1),
-  ];
+    wrap.innerHTML = '';
+    wrap.classList.remove('generating');
+    var img = document.createElement('img');
+    img.src = data.image;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+    wrap.appendChild(img);
+    var dlBtn = document.getElementById('dlbtn-'+i);
+    if (dlBtn) { dlBtn.style.display=''; dlBtn.dataset.url=data.image; }
 
-  trySource(i, wrap, sources, 0);
-}
-
-function trySource(i, wrap, sources, idx) {
-  if (idx >= sources.length) {
-    if (wrap) wrap.innerHTML = '<div class="generating-overlay"><div class="gen-icon">❌</div><div class="gen-text">Échec — clique 🔄 pour réessayer</div></div>';
-    return;
-  }
-  var url = sources[idx];
-  var img = new Image();
-
-  // Set a manual timeout since onerror may not fire
-  var timer = setTimeout(function() {
-    img.src = '';
-    trySource(i, wrap, sources, idx+1);
-  }, 30000);
-
-  img.onload = function() {
-    clearTimeout(timer);
-    if (img.naturalWidth < 10) { trySource(i, wrap, sources, idx+1); return; }
-    showImage(i, wrap, null, url);
-  };
-  img.onerror = function() {
-    clearTimeout(timer);
-    trySource(i, wrap, sources, idx+1);
-  };
-  img.src = url;
-}
-
-function showImage(i, wrap, base64url, fallbackUrl) {
-  wrap.innerHTML = '';
-  wrap.classList.remove('generating');
-  var img = document.createElement('img');
-  img.src = base64url || fallbackUrl;
-  img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-  wrap.appendChild(img);
-  var dlBtn = document.getElementById('dlbtn-'+i);
-  if (dlBtn) {
-    dlBtn.style.display = '';
-    dlBtn.dataset.url = base64url || fallbackUrl;
+  } catch(e) {
+    if (wrap) wrap.innerHTML = '<div class="generating-overlay"><div class="gen-icon">❌</div><div class="gen-text">' + (e.message||'Erreur') + ' — clique 🔄</div></div>';
   }
 }
 
