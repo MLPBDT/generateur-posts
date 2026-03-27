@@ -1,3 +1,5 @@
+export const maxDuration = 60; // increase Vercel timeout to 60s
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -6,16 +8,38 @@ export default async function handler(req, res) {
   try {
     const { prompt } = req.body;
     const seed = Math.floor(Math.random() * 99999);
-    const encoded = encodeURIComponent(prompt + ', no text, no watermark, no logo');
-    const url = `https://image.pollinations.ai/prompt/${encoded}?width=1080&height=1080&nologo=true&seed=${seed}`;
+    const clean = (prompt || 'beautiful photo') + ', no text, no watermark, no logo';
+    const encoded = encodeURIComponent(clean);
 
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Pollinations error: ' + response.status);
+    // Try flux model first, then standard
+    const urls = [
+      `https://image.pollinations.ai/prompt/${encoded}?width=1024&height=1024&nologo=true&seed=${seed}&model=flux`,
+      `https://image.pollinations.ai/prompt/${encoded}?width=1024&height=1024&nologo=true&seed=${seed}`,
+    ];
 
-    const buffer = await response.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString('base64');
+    for (const url of urls) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 50000);
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeout);
 
-    return res.status(200).json({ image: 'data:image/jpeg;base64,' + base64 });
+        if (!response.ok) continue;
+        const ct = response.headers.get('content-type') || '';
+        if (!ct.includes('image')) continue;
+
+        const buffer = await response.arrayBuffer();
+        if (buffer.byteLength < 5000) continue;
+
+        const base64 = Buffer.from(buffer).toString('base64');
+        const ext = ct.includes('png') ? 'png' : 'jpeg';
+        return res.status(200).json({ image: `data:image/${ext};base64,` + base64 });
+      } catch(e) {
+        continue;
+      }
+    }
+
+    return res.status(500).json({ error: 'All image sources failed' });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
