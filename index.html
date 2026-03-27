@@ -29,9 +29,7 @@
   .pill-btn{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;padding:7px 16px;cursor:pointer;transition:all .2s;text-transform:uppercase}
   .pill-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
 
-  /* Mode tabs */
-  .mode-tabs{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:24px}
-  @media(max-width:520px){.mode-tabs{grid-template-columns:1fr 1fr}}
+  .mode-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:24px}
   .mode-tab{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s}
   .mode-tab:hover{border-color:var(--accent)}
   .mode-tab.active{background:rgba(200,241,53,.08);border-color:var(--accent)}
@@ -42,19 +40,6 @@
   .mode-panel{display:none}
   .mode-panel.active{display:block}
 
-  /* Image source tabs */
-  .img-source-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
-  .img-source-tab{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .2s}
-  .img-source-tab:hover{border-color:var(--accent)}
-  .img-source-tab.active{background:rgba(200,241,53,.08);border-color:var(--accent)}
-  .img-source-tab .ist-icon{font-size:18px;margin-bottom:4px}
-  .img-source-tab .ist-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text)}
-  .img-source-tab.active .ist-title{color:var(--accent)}
-  .img-source-tab .ist-desc{font-size:10px;color:var(--muted);margin-top:2px}
-  .img-src-panel{display:none}
-  .img-src-panel.active{display:block}
-
-  /* Upload zone */
   .upload-zone{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;position:relative;min-height:90px}
   .upload-zone:hover{border-color:var(--accent)}
   .upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0}
@@ -68,16 +53,6 @@
   .photo-count-label{font-size:12px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700}
   .clear-all-btn{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:5px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
   .clear-all-btn:hover{border-color:#ff6b6b;color:#ff6b6b}
-
-  /* Image ref upload */
-  .ref-upload-zone{border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;min-height:80px}
-  .ref-upload-zone:hover{border-color:var(--accent)}
-  .ref-upload-zone.has-img{border-style:solid;border-color:var(--accent);padding:0;overflow:hidden}
-  .ref-upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0}
-  .ref-preview{width:100%;max-height:180px;object-fit:cover;border-radius:10px;display:none}
-  .ref-preview.show{display:block}
-  .ref-remove{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.8);border:none;color:#fff;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;display:none;z-index:2}
-  .ref-remove.show{display:block}
 
   .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
   .toggle-row:last-child{border-bottom:none;padding-bottom:0}
@@ -105,41 +80,25 @@
   .results.show{display:block}
   .post-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;animation:fadeUp .4s ease both}
   @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  .post-photo-wrap{width:100%;height:260px;background:var(--bg);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .post-photo-wrap{width:100%;height:260px;overflow:hidden}
   .post-photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
-  .post-photo-wrap.generating{background:linear-gradient(135deg,#0a0a0f,#13131a)}
-  .generating-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-  .gen-icon{font-size:32px;animation:pulse 1.5s infinite}
-  @keyframes pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
-  .gen-text{font-size:13px;color:var(--muted);font-family:'Syne',sans-serif;letter-spacing:1px}
-  .gen-prompt-preview{font-size:11px;color:var(--muted);max-width:80%;text-align:center;font-style:italic;margin-top:-4px}
-
   .post-body{padding:22px}
   .post-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
   .post-platform{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
   .post-actions{display:flex;gap:8px;flex-wrap:wrap}
-  .copy-btn,.dl-btn,.regen-btn,.edit-prompt-btn{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:5px 12px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
-  .copy-btn:hover,.dl-btn:hover,.regen-btn:hover,.edit-prompt-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-btn,.dl-btn{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:5px 12px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+  .copy-btn:hover,.dl-btn:hover{border-color:var(--accent);color:var(--accent)}
   .copy-btn.copied{border-color:var(--accent);color:var(--accent)}
   .post-text{font-size:15px;line-height:1.7;white-space:pre-wrap;color:var(--text)}
   .post-extra{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
   .post-extra-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
   .post-extra-text{font-size:13px;color:var(--muted);line-height:1.6;font-style:italic}
 
-  /* Prompt editor popup */
-  .prompt-editor{display:none;margin-top:12px;background:var(--bg);border:1px solid var(--accent);border-radius:10px;padding:14px}
-  .prompt-editor.show{display:block}
-  .prompt-editor textarea{font-size:13px;min-height:60px;margin-bottom:10px}
-  .prompt-editor-btns{display:flex;gap:8px;justify-content:flex-end}
-  .btn-sm{background:var(--accent);color:#000;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;cursor:pointer}
-  .btn-sm-outline{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 14px;cursor:pointer}
-
   .error-box{background:#1a0a0a;border:1px solid #3a1010;border-radius:12px;color:#ff6b6b;padding:16px;font-size:14px;display:none;margin-top:16px}
   .error-box.show{display:block}
   .section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;margin-top:28px}
   .info-box{background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.2);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--muted);margin-bottom:16px}
   .info-box strong{color:var(--accent)}
-  .hint{font-size:12px;color:var(--muted);margin-top:6px}
 </style>
 </head>
 <body>
@@ -147,20 +106,14 @@
   <header>
     <div class="badge">✦ Propulsé par IA</div>
     <h1>Génère tes posts<br><span>réseaux sociaux</span></h1>
-    <p class="sub">Texte, image IA ou tes photos — des posts complets en secondes.</p>
+    <p class="sub">Texte ou avec tes photos — des posts complets en secondes.</p>
   </header>
 
-  <!-- MODE SELECTOR -->
   <div class="mode-tabs">
     <div class="mode-tab active" onclick="setMode('text')" id="tab-text">
       <div class="tab-icon">✍️</div>
       <div class="tab-title">Texte</div>
       <div class="tab-desc">Texte uniquement</div>
-    </div>
-    <div class="mode-tab" onclick="setMode('aiphoto')" id="tab-aiphoto">
-      <div class="tab-icon">🤖</div>
-      <div class="tab-title">Image IA</div>
-      <div class="tab-desc">Générée par IA</div>
     </div>
     <div class="mode-tab" onclick="setMode('myphoto')" id="tab-myphoto">
       <div class="tab-icon">📸</div>
@@ -170,101 +123,13 @@
     <div class="mode-tab" onclick="setMode('both')" id="tab-both">
       <div class="tab-icon">🚀</div>
       <div class="tab-title">Complet</div>
-      <div class="tab-desc">Tout ensemble</div>
+      <div class="tab-desc">Photos + options</div>
     </div>
   </div>
 
   <!-- TEXTE -->
   <div class="mode-panel active" id="panel-text">
     <div class="info-box">L'IA génère <strong>uniquement le texte</strong> du post.</div>
-  </div>
-
-  <!-- IMAGE IA -->
-  <div class="mode-panel" id="panel-aiphoto">
-    <div class="info-box">L'IA génère une <strong>image pour chaque post</strong>. Tu peux décrire librement, partir d'une image existante, ou laisser l'IA choisir.</div>
-    <div class="card">
-      <div class="field">
-        <label>Comment générer les images ?</label>
-        <div class="img-source-tabs">
-          <div class="img-source-tab active" onclick="setImgSrc('auto','1')" id="imgtab1-auto">
-            <div class="ist-icon">🤖</div>
-            <div class="ist-title">Auto</div>
-            <div class="ist-desc">L'IA choisit</div>
-          </div>
-          <div class="img-source-tab" onclick="setImgSrc('manual','1')" id="imgtab1-manual">
-            <div class="ist-icon">✍️</div>
-            <div class="ist-title">Mon prompt</div>
-            <div class="ist-desc">Je décris l'image</div>
-          </div>
-          <div class="img-source-tab" onclick="setImgSrc('ref','1')" id="imgtab1-ref">
-            <div class="ist-icon">🖼️</div>
-            <div class="ist-title">Depuis photo</div>
-            <div class="ist-desc">Modifie mon image</div>
-          </div>
-        </div>
-
-        <!-- AUTO -->
-        <div class="img-src-panel active" id="imgpanel1-auto">
-          <label>Style visuel</label>
-          <select id="imgStyle1">
-            <option value="professional product photography, clean white background, commercial">📦 Photo produit pro</option>
-            <option value="lifestyle photography, warm golden light, authentic real life">🌿 Lifestyle naturel</option>
-            <option value="minimalist flat lay, pastel colors, soft shadows, Instagram aesthetic" selected>✨ Flat lay Instagram</option>
-            <option value="vibrant colorful street photography, dynamic urban energy">🏙️ Street dynamique</option>
-            <option value="luxury editorial photography, elegant, cinematic lighting, high-end">💎 Luxe & élégance</option>
-            <option value="food photography, appetizing close-up, professional restaurant lighting">🍽️ Food photography</option>
-            <option value="fitness gym photography, energetic, action shot, motivational">💪 Fitness & sport</option>
-            <option value="nature outdoor photography, fresh, green, eco-friendly vibes">🌱 Nature & éco</option>
-            <option value="dark moody photography, dramatic shadows, artistic, editorial">🌑 Sombre & artistique</option>
-          </select>
-        </div>
-
-        <!-- MANUEL -->
-        <div class="img-src-panel" id="imgpanel1-manual">
-          <label>Décris ton image</label>
-          <textarea id="manualPrompt1" placeholder="Ex: Une tasse de café fumante sur une table en bois, lumière du matin douce, ambiance cozy, tons chauds..."></textarea>
-          <p class="hint">💡 Plus tu es précis, meilleur est le résultat. Tu peux décrire le sujet, les couleurs, l'ambiance, le cadrage.</p>
-          <div style="margin-top:14px">
-            <label>Style de base (optionnel)</label>
-            <select id="manualStyle1">
-              <option value="">Aucun style particulier</option>
-              <option value="photography, photorealistic">📷 Photoréaliste</option>
-              <option value="digital illustration, flat design">🎨 Illustration digitale</option>
-              <option value="watercolor painting, artistic">🖌️ Aquarelle</option>
-              <option value="3D render, clean, modern">🧊 Rendu 3D</option>
-              <option value="vintage retro poster style">📻 Vintage rétro</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- DEPUIS PHOTO -->
-        <div class="img-src-panel" id="imgpanel1-ref">
-          <label>Ton image de référence</label>
-          <div class="ref-upload-zone" id="refZone1">
-            <input type="file" accept="image/*" onchange="handleRefImg(event,'1')" />
-            <img class="ref-preview" id="refPreview1" />
-            <button class="ref-remove" id="refRemove1" onclick="removeRefImg(event,'1')">✕ Supprimer</button>
-            <div id="refPlaceholder1">
-              <div style="font-size:28px;margin-bottom:8px">🖼️</div>
-              <p class="upload-text">Glisse ton image ou <span>clique pour choisir</span></p>
-            </div>
-          </div>
-          <div style="margin-top:14px">
-            <label>Que faire avec cette image ?</label>
-            <select id="refAction1">
-              <option value="same style and composition but adapted for">Garder le style et adapter au business</option>
-              <option value="similar scene but more professional version of">Rendre plus professionnel</option>
-              <option value="inspired by this image, reimagined for">S'inspirer et réimaginer pour le business</option>
-              <option value="exact same mood and colors but for">Même ambiance et couleurs</option>
-            </select>
-          </div>
-          <div style="margin-top:14px">
-            <label>Détails supplémentaires (optionnel)</label>
-            <input type="text" id="refExtra1" placeholder="Ex: ajoute des fleurs, change la couleur en bleu, ambiance plus luxe..." />
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- MES PHOTOS -->
@@ -290,98 +155,30 @@
 
   <!-- COMPLET -->
   <div class="mode-panel" id="panel-both">
-    <div class="info-box">Post complet : <strong>image</strong> + <strong>texte</strong> + options avancées.</div>
+    <div class="info-box">Post complet : <strong>tes photos</strong> + <strong>texte généré</strong> + options avancées.</div>
     <div class="card">
       <div class="field">
-        <label>Source des images</label>
-        <div class="img-source-tabs">
-          <div class="img-source-tab active" onclick="setImgSrc('auto','2')" id="imgtab2-auto">
-            <div class="ist-icon">🤖</div>
-            <div class="ist-title">Auto IA</div>
-            <div class="ist-desc">L'IA choisit</div>
-          </div>
-          <div class="img-source-tab" onclick="setImgSrc('manual','2')" id="imgtab2-manual">
-            <div class="ist-icon">✍️</div>
-            <div class="ist-title">Mon prompt</div>
-            <div class="ist-desc">Je décris</div>
-          </div>
-          <div class="img-source-tab" onclick="setImgSrc('ref','2')" id="imgtab2-ref">
-            <div class="ist-icon">🖼️</div>
-            <div class="ist-title">Depuis photo</div>
-            <div class="ist-desc">Modifie mon image</div>
-          </div>
-          <div class="img-source-tab" onclick="setImgSrc('myphoto','2')" id="imgtab2-myphoto">
-            <div class="ist-icon">📸</div>
-            <div class="ist-title">Mes photos</div>
-            <div class="ist-desc">Mes propres photos</div>
-          </div>
+        <label>Tes photos <span id="photoCount2" style="color:var(--accent);font-size:11px"></span></label>
+        <div class="upload-zone">
+          <input type="file" id="photoInput2" accept="image/*" multiple onchange="handlePhotos(event,2)" />
+          <div style="font-size:28px;margin-bottom:6px">📸</div>
+          <p class="upload-text">Glisse tes photos ou <span>clique pour choisir</span></p>
         </div>
-
-        <div class="img-src-panel active" id="imgpanel2-auto">
-          <label>Style visuel</label>
-          <select id="imgStyle2">
-            <option value="professional product photography, clean background">📦 Produit pro</option>
-            <option value="lifestyle photography, warm natural light" selected>🌿 Lifestyle</option>
-            <option value="minimalist flat lay, pastel colors, Instagram">✨ Flat lay</option>
-            <option value="luxury editorial photography, cinematic lighting">💎 Luxe</option>
-            <option value="food photography, appetizing, restaurant">🍽️ Food</option>
-            <option value="fitness photography, energetic, action">💪 Fitness</option>
-          </select>
-        </div>
-
-        <div class="img-src-panel" id="imgpanel2-manual">
-          <label>Décris ton image</label>
-          <textarea id="manualPrompt2" placeholder="Ex: Une femme souriante tenant un produit, fond épuré blanc, lumière studio..."></textarea>
-          <div style="margin-top:10px">
-            <select id="manualStyle2">
-              <option value="">Aucun style particulier</option>
-              <option value="photography, photorealistic">📷 Photoréaliste</option>
-              <option value="digital illustration, flat design">🎨 Illustration</option>
-              <option value="watercolor painting">🖌️ Aquarelle</option>
-              <option value="3D render, modern">🧊 Rendu 3D</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="img-src-panel" id="imgpanel2-ref">
-          <label>Image de référence</label>
-          <div class="ref-upload-zone" id="refZone2">
-            <input type="file" accept="image/*" onchange="handleRefImg(event,'2')" />
-            <img class="ref-preview" id="refPreview2" />
-            <button class="ref-remove" id="refRemove2" onclick="removeRefImg(event,'2')">✕</button>
-            <div id="refPlaceholder2">
-              <div style="font-size:24px;margin-bottom:6px">🖼️</div>
-              <p class="upload-text">Glisse ton image ou <span>clique</span></p>
-            </div>
-          </div>
-          <div style="margin-top:10px"><select id="refAction2">
-            <option value="same style and composition but adapted for">Garder le style</option>
-            <option value="similar scene but more professional version of">Rendre pro</option>
-            <option value="inspired by this image, reimagined for">Réimaginer</option>
-            <option value="exact same mood and colors but for">Même ambiance</option>
-          </select></div>
-          <div style="margin-top:10px"><input type="text" id="refExtra2" placeholder="Détails supplémentaires..." /></div>
-        </div>
-
-        <div class="img-src-panel" id="imgpanel2-myphoto">
-          <div class="upload-zone" style="margin-top:4px">
-            <input type="file" id="photoInput2" accept="image/*" multiple onchange="handlePhotos(event,2)" />
-            <div style="font-size:24px;margin-bottom:6px">📸</div>
-            <p class="upload-text">Glisse tes photos ou <span>clique</span></p>
-          </div>
-          <div class="photos-grid" id="photosGrid2"></div>
-          <div class="photos-actions" id="photosActions2" style="display:none">
-            <span class="photo-count-label" id="photosLabel2"></span>
-            <button class="clear-all-btn" onclick="clearPhotos(2)">🗑</button>
-          </div>
+        <div class="photos-grid" id="photosGrid2"></div>
+        <div class="photos-actions" id="photosActions2" style="display:none">
+          <span class="photo-count-label" id="photosLabel2"></span>
+          <button class="clear-all-btn" onclick="clearPhotos(2)">🗑 Tout supprimer</button>
         </div>
       </div>
-
       <div class="field">
         <label>Options</label>
         <div class="toggle-row">
           <div class="toggle-label">Hashtags séparés <small>Liste optimisée en plus du post</small></div>
           <label class="toggle"><input type="checkbox" id="toggleHashtags" /><span class="toggle-slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-label">Description visuelle <small>Pour briefer un graphiste ou créer tes stories</small></div>
+          <label class="toggle"><input type="checkbox" id="toggleDesc" /><span class="toggle-slider"></span></label>
         </div>
       </div>
     </div>
@@ -440,28 +237,14 @@
 
 <script>
 var currentMode = 'text';
-var imgSrc = { '1': 'auto', '2': 'auto' };
 var photos = { 1: [], 2: [] };
-var refImgs = { '1': null, '2': null };
 
 function setMode(mode) {
   currentMode = mode;
-  ['text','aiphoto','myphoto','both'].forEach(function(m) {
+  ['text','myphoto','both'].forEach(function(m) {
     document.getElementById('tab-'+m).classList.toggle('active', m===mode);
     document.getElementById('panel-'+m).classList.toggle('active', m===mode);
   });
-}
-
-function setImgSrc(src, slot) {
-  imgSrc[slot] = src;
-  var tabs = document.querySelectorAll('#panel-'+(slot==='1'?'aiphoto':'both')+' .img-source-tab');
-  tabs.forEach(function(t) { t.classList.remove('active'); });
-  var tabEl = document.getElementById('imgtab'+slot+'-'+src);
-  if (tabEl) tabEl.classList.add('active');
-  var panels = document.querySelectorAll('#panel-'+(slot==='1'?'aiphoto':'both')+' .img-src-panel');
-  panels.forEach(function(p) { p.classList.remove('active'); });
-  var panelEl = document.getElementById('imgpanel'+slot+'-'+src);
-  if (panelEl) panelEl.classList.add('active');
 }
 
 document.querySelectorAll('.pill-btn[data-p]').forEach(function(btn) {
@@ -505,31 +288,6 @@ function renderGrid(slot) {
   });
 }
 
-function handleRefImg(event, slot) {
-  var file = event.target.files[0];
-  if (!file) return;
-  var r = new FileReader();
-  r.onload = function(e) {
-    refImgs[slot] = e.target.result;
-    document.getElementById('refPreview'+slot).src = refImgs[slot];
-    document.getElementById('refPreview'+slot).classList.add('show');
-    document.getElementById('refRemove'+slot).classList.add('show');
-    document.getElementById('refPlaceholder'+slot).style.display = 'none';
-    document.getElementById('refZone'+slot).classList.add('has-img');
-  };
-  r.readAsDataURL(file);
-}
-
-function removeRefImg(e, slot) {
-  e.stopPropagation();
-  refImgs[slot] = null;
-  document.getElementById('refPreview'+slot).src = '';
-  document.getElementById('refPreview'+slot).classList.remove('show');
-  document.getElementById('refRemove'+slot).classList.remove('show');
-  document.getElementById('refPlaceholder'+slot).style.display = 'block';
-  document.getElementById('refZone'+slot).classList.remove('has-img');
-}
-
 function getSelectedPlatforms() {
   return Array.from(document.querySelectorAll('.pill-btn[data-p].active')).map(function(b){ return b.dataset.p; });
 }
@@ -538,21 +296,6 @@ function showError(msg) {
   var el = document.getElementById('errorBox');
   el.textContent = msg;
   el.classList.add('show');
-}
-
-function buildImagePrompt(slot, postContent, business, style) {
-  var src = imgSrc[slot];
-  if (src === 'manual') {
-    var txt = (document.getElementById('manualPrompt'+slot)||{}).value || '';
-    var st = (document.getElementById('manualStyle'+slot)||{}).value || '';
-    return txt + (st ? ', '+st : '');
-  }
-  if (src === 'ref') {
-    var action = (document.getElementById('refAction'+slot)||{}).value || 'inspired by this image, reimagined for';
-    var extra = (document.getElementById('refExtra'+slot)||{}).value || '';
-    return action + ' ' + business + (extra ? ', '+extra : '') + ', ' + style + ', no text';
-  }
-  return null; // auto — will be generated by AI
 }
 
 async function generate() {
@@ -566,35 +309,35 @@ async function generate() {
   if (!business) { showError('Décris ton business pour continuer.'); return; }
   if (!platforms.length) { showError('Sélectionne au moins une plateforme.'); return; }
 
-  var slot = currentMode === 'aiphoto' ? '1' : '2';
-  var needsAI = currentMode === 'aiphoto' || currentMode === 'both';
-  var needsMyPhotos = currentMode === 'myphoto' || (currentMode === 'both' && imgSrc['2'] === 'myphoto');
-  var activePhotos = needsMyPhotos ? photos[currentMode === 'myphoto' ? 1 : 2] : [];
+  var slot = currentMode === 'myphoto' ? 1 : 2;
+  var activePhotos = (currentMode === 'myphoto' || currentMode === 'both') ? photos[slot] : [];
 
-  if (needsMyPhotos && activePhotos.length === 0) { showError('Ajoute au moins une photo.'); return; }
-  if (needsAI && imgSrc[slot] === 'ref' && !refImgs[slot]) { showError('Ajoute une image de référence.'); return; }
+  if ((currentMode === 'myphoto' || currentMode === 'both') && activePhotos.length === 0) {
+    showError('Ajoute au moins une photo.'); return;
+  }
 
   document.getElementById('generateBtn').disabled = true;
   document.getElementById('loader').classList.add('show');
   document.getElementById('results').classList.remove('show');
 
   var withHashtags = currentMode === 'both' && document.getElementById('toggleHashtags').checked;
+  var withDesc = currentMode === 'both' && document.getElementById('toggleDesc').checked;
+
   var promoLine = promo ? '- Promo : '+promo+'\n' : '';
-  var photoLine = activePhotos.length > 0 ? '- '+activePhotos.length+' photo(s) : '+activePhotos.map(function(p){ return '"'+p.name+'"'; }).join(', ')+'.\n' : '';
+  var photoLine = activePhotos.length > 0
+    ? '- '+activePhotos.length+' photo(s) uploadée(s) : '+activePhotos.map(function(p){ return '"'+p.name+'"'; }).join(', ')+'.\n'
+    : '';
 
-  var style = '';
-  if (needsAI) {
-    var styleEl = document.getElementById('imgStyle'+slot);
-    if (styleEl) style = styleEl.value;
-  }
-
-  var aiImgLine = (needsAI && imgSrc[slot] === 'auto') ? '- Pour chaque post ajoute "image_prompt": un prompt anglais 15 mots max décrivant une image. Style: '+style+'.\n' : '';
   var extraFields = '';
-  if (needsAI && imgSrc[slot] === 'auto') extraFields += ', "image_prompt": "..."';
   if (withHashtags) extraFields += ', "hashtags": "#tag1 #tag2"';
+  if (withDesc) extraFields += ', "visual_desc": "description visuelle courte"';
   if (activePhotos.length > 0) extraFields += ', "photo_index": 0';
 
-  var prompt = 'Tu es expert marketing digital.\n\nGénère exactement '+count+' posts pour:\n- Business: '+business+'\n- Plateformes: '+platforms.join(', ')+'\n'+promoLine+photoLine+aiImgLine+'- Ton: '+tone+'\n\nVarie les angles, adapte à chaque plateforme, emojis + appel à l\'action.\n\nJSON uniquement sans backticks:\n{"posts": [{"platform": "nom", "content": "texte"'+extraFields+'}, ...]}';
+  var extraInstructions = '';
+  if (withDesc) extraInstructions += '\n- Pour chaque post, ajoute "visual_desc" : 2-3 phrases décrivant comment mettre en scène la photo (cadrage, ambiance, couleurs).';
+  if (withHashtags) extraInstructions += '\n- Pour chaque post, ajoute "hashtags" : 10-15 hashtags optimisés séparés par des espaces.';
+
+  var prompt = 'Tu es expert marketing digital.\n\nGénère exactement '+count+' posts pour:\n- Business: '+business+'\n- Plateformes: '+platforms.join(', ')+'\n'+promoLine+photoLine+'- Ton: '+tone+'\n\nVarie les angles, adapte à chaque plateforme, emojis + appel à l\'action.'+extraInstructions+'\n\nJSON uniquement sans backticks:\n{"posts": [{"platform": "nom", "content": "texte"'+extraFields+'}, ...]}';
 
   try {
     var res = await fetch('/api/generate', {
@@ -606,7 +349,7 @@ async function generate() {
     var text = (data.content||[]).map(function(b){ return b.text||''; }).join('');
     var clean = text.replace(/```json|```/g,'').trim();
     var parsed = JSON.parse(clean);
-    renderPosts(parsed.posts||[], activePhotos, needsAI, slot, style, business);
+    renderPosts(parsed.posts||[], activePhotos);
   } catch(e) {
     showError('Erreur: '+(e.message||'Réessaie.'));
   } finally {
@@ -615,7 +358,7 @@ async function generate() {
   }
 }
 
-function renderPosts(posts, activePhotos, needsAI, slot, style, business) {
+function renderPosts(posts, activePhotos) {
   var container = document.getElementById('postsContainer');
   container.innerHTML = '';
   if (!posts.length) { showError('Aucun post généré. Réessaie.'); return; }
@@ -624,56 +367,27 @@ function renderPosts(posts, activePhotos, needsAI, slot, style, business) {
     var card = document.createElement('div');
     card.className = 'post-card';
     card.style.animationDelay = (i*0.08)+'s';
-    card.id = 'card-'+i;
 
-    var photoHtml = '', dlBtn = '', regenBtn = '', editBtn = '';
+    var photoHtml = '';
+    var dlBtn = '';
 
     if (activePhotos.length > 0) {
       var idx = (typeof post.photo_index==='number' && post.photo_index>=0 && post.photo_index<activePhotos.length) ? post.photo_index : (i%activePhotos.length);
       photoHtml = '<div class="post-photo-wrap"><img src="'+activePhotos[idx].dataUrl+'" /></div>';
-      dlBtn = '<button class="dl-btn" onclick="dlMyPhoto('+idx+','+i+')">⬇ Photo</button>';
-    } else if (needsAI) {
-      var manualPromptVal = (document.getElementById('manualPrompt'+slot)||{}).value || '';
-      var finalPrompt;
-      if (imgSrc[slot] === 'auto' && post.image_prompt) {
-        finalPrompt = post.image_prompt + ', ' + style;
-      } else if (imgSrc[slot] === 'manual') {
-        var ms = (document.getElementById('manualStyle'+slot)||{}).value || '';
-        finalPrompt = manualPromptVal + (ms ? ', '+ms : '');
-      } else if (imgSrc[slot] === 'ref') {
-        var action = (document.getElementById('refAction'+slot)||{}).value || '';
-        var extra = (document.getElementById('refExtra'+slot)||{}).value || '';
-        finalPrompt = action+' '+business+(extra?', '+extra:'')+', '+style;
-      } else {
-        finalPrompt = post.image_prompt + ', ' + style;
-      }
-
-      photoHtml = '<div class="post-photo-wrap generating" id="photowrap-'+i+'"><div class="generating-overlay"><div class="gen-icon">🎨</div><div class="gen-text">Génération en cours...</div><div class="gen-prompt-preview">'+escHtml(finalPrompt.substring(0,60))+'...</div></div></div>';
-      regenBtn = '<button class="regen-btn" onclick="regenImage('+i+', this)" data-prompt="'+escAttr(finalPrompt)+'">🔄 Regénérer</button>';
-      editBtn = '<button class="edit-prompt-btn" onclick="togglePromptEditor('+i+')">✏️ Modifier prompt</button>';
-      dlBtn = '<button class="dl-btn" id="dlbtn-'+i+'" style="display:none" onclick="dlAiPhoto('+i+')">⬇ Image</button>';
-
-      setTimeout(function(ci, p){ loadAiImage(ci, p); }.bind(null, i, finalPrompt), i*600);
+      dlBtn = '<button class="dl-btn" onclick="dlPhoto('+idx+','+i+')">⬇ Photo</button>';
     }
 
     var hashHtml = post.hashtags ? '<div class="post-extra"><div class="post-extra-label"># Hashtags</div><div class="post-extra-text">'+escHtml(post.hashtags)+'</div></div>' : '';
+    var descHtml = post.visual_desc ? '<div class="post-extra"><div class="post-extra-label">📐 Description visuelle</div><div class="post-extra-text">'+escHtml(post.visual_desc)+'</div></div>' : '';
 
     card.innerHTML = photoHtml +
       '<div class="post-body">' +
         '<div class="post-header">' +
           '<span class="post-platform">'+escHtml(post.platform)+'</span>' +
-          '<div class="post-actions">'+regenBtn+editBtn+dlBtn+'<button class="copy-btn" onclick="copyPost(this,\'post-'+i+'\')">Copier</button></div>' +
+          '<div class="post-actions">'+dlBtn+'<button class="copy-btn" onclick="copyPost(this,\'post-'+i+'\')">Copier</button></div>' +
         '</div>' +
         '<div class="post-text" id="post-'+i+'">'+escHtml(post.content)+'</div>' +
-        hashHtml +
-        '<div class="prompt-editor" id="editor-'+i+'">' +
-          '<label style="margin-bottom:8px">Modifier le prompt image</label>' +
-          '<textarea id="editorTA-'+i+'"></textarea>' +
-          '<div class="prompt-editor-btns">' +
-            '<button class="btn-sm-outline" onclick="togglePromptEditor('+i+')">Annuler</button>' +
-            '<button class="btn-sm" onclick="applyPrompt('+i+')">⚡ Regénérer</button>' +
-          '</div>' +
-        '</div>' +
+        hashHtml + descHtml +
       '</div>';
 
     container.appendChild(card);
@@ -682,87 +396,22 @@ function renderPosts(posts, activePhotos, needsAI, slot, style, business) {
   document.getElementById('results').classList.add('show');
 }
 
-function togglePromptEditor(i) {
-  var editor = document.getElementById('editor-'+i);
-  var regenBtn = document.querySelector('#card-'+i+' .regen-btn');
-  var isShow = editor.classList.toggle('show');
-  if (isShow && regenBtn) {
-    document.getElementById('editorTA-'+i).value = regenBtn.dataset.prompt || '';
-  }
-}
-
-function applyPrompt(i) {
-  var newPrompt = document.getElementById('editorTA-'+i).value.trim();
-  if (!newPrompt) return;
-  var regenBtn = document.querySelector('#card-'+i+' .regen-btn');
-  if (regenBtn) regenBtn.dataset.prompt = newPrompt;
-  document.getElementById('editor-'+i).classList.remove('show');
-  regenImage(i, regenBtn || { dataset: { prompt: newPrompt } });
-}
-
-async function loadAiImage(i, prompt) {
-  var wrap = document.getElementById('photowrap-'+i);
-  if (!wrap) return;
-
-  wrap.innerHTML = '<div class="generating-overlay"><div class="gen-icon">🎨</div><div class="gen-text">Génération en cours... (20-40s)</div></div>';
-  wrap.classList.add('generating');
-
-  try {
-    var res = await fetch('/api/image', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ prompt: prompt })
-    });
-    var data = await res.json();
-    if (!data.image) throw new Error(data.error || 'Pas d image');
-
-    wrap.innerHTML = '';
-    wrap.classList.remove('generating');
-    var img = document.createElement('img');
-    img.src = data.image;
-    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-    wrap.appendChild(img);
-    var dlBtn = document.getElementById('dlbtn-'+i);
-    if (dlBtn) { dlBtn.style.display=''; dlBtn.dataset.url=data.image; }
-
-  } catch(e) {
-    if (wrap) wrap.innerHTML = '<div class="generating-overlay"><div class="gen-icon">❌</div><div class="gen-text">' + (e.message||'Erreur') + ' — clique 🔄</div></div>';
-  }
-}
-
-function regenImage(i, btn) {
-  var prompt = btn.dataset.prompt;
-  var wrap = document.getElementById('photowrap-'+i);
-  if (!wrap) return;
-  wrap.classList.add('generating');
-  wrap.innerHTML = '<div class="generating-overlay"><div class="gen-icon">🎨</div><div class="gen-text">Nouvelle génération...</div></div>';
-  var dlBtn = document.getElementById('dlbtn-'+i);
-  if (dlBtn) dlBtn.style.display='none';
-  loadAiImage(i, prompt);
-}
-
-function dlAiPhoto(i) {
-  var dlBtn = document.getElementById('dlbtn-'+i);
-  if (!dlBtn||!dlBtn.dataset.url) return;
-  // Open in new tab (direct download blocked by CORS on Pollinations)
-  window.open(dlBtn.dataset.url, '_blank');
-}
-
-function dlMyPhoto(photoIdx, postIdx) {
-  var slot = currentMode==='myphoto' ? 1 : 2;
+function dlPhoto(photoIdx, postIdx) {
+  var slot = currentMode === 'myphoto' ? 1 : 2;
   if (!photos[slot][photoIdx]) return;
   var a = document.createElement('a');
-  a.href = photos[slot][photoIdx].dataUrl; a.download='photo-post-'+(postIdx+1)+'.jpg'; a.click();
+  a.href = photos[slot][photoIdx].dataUrl;
+  a.download = 'photo-post-'+(postIdx+1)+'.jpg';
+  a.click();
 }
 
 function escHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function escAttr(str){ return String(str).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 function copyPost(btn, id) {
   var text = document.getElementById(id).innerText;
   navigator.clipboard.writeText(text).then(function() {
     btn.textContent='✓ Copié!'; btn.classList.add('copied');
-    setTimeout(function(){ btn.textContent='Copier'; btn.classList.remove('copied'); }, 2000);
+    setTimeout(function(){ btn.textContent='Copier'; btn.classList.remove('copied'); },2000);
   });
 }
 </script>
