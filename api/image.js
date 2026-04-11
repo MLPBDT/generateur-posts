@@ -7,28 +7,41 @@ export default async function handler(req, res) {
 
   try {
     const { prompt } = req.body;
-    const clean = (prompt || 'beautiful photo') + ', high quality, no text, no watermark';
+    const clean = (prompt || 'beautiful photo') + ', high quality, no text, no watermark, no logo';
 
     const response = await fetch(
-      "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0",
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: "POST",
-        headers: {
-          "Authorization": "Bearer " + process.env.HF_API_KEY,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ inputs: clean }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: "Generate an image: " + clean }]
+          }],
+          generationConfig: { responseModalities: ["IMAGE", "TEXT"] }
+        })
       }
     );
 
     if (!response.ok) {
       const text = await response.text();
-      throw new Error("HuggingFace error " + response.status + ": " + text.substring(0, 200));
+      throw new Error("Gemini error " + response.status + ": " + text.substring(0, 300));
     }
 
-    const buffer = await response.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString('base64');
-    return res.status(200).json({ image: 'data:image/jpeg;base64,' + base64 });
+    const data = await response.json();
+
+    // Extract image from response
+    const parts = data?.candidates?.[0]?.content?.parts || [];
+    const imagePart = parts.find(p => p.inlineData);
+
+    if (!imagePart) {
+      throw new Error("Pas d'image dans la réponse Gemini");
+    }
+
+    const base64 = imagePart.inlineData.data;
+    const mimeType = imagePart.inlineData.mimeType || 'image/png';
+
+    return res.status(200).json({ image: `data:${mimeType};base64,${base64}` });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
