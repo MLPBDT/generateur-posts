@@ -3,495 +3,366 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Générateur de Posts IA</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<title>PostIA — Générateur de posts réseaux sociaux</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{--bg:#0a0a0f;--surface:#13131a;--border:#22222e;--accent:#c8f135;--text:#f0f0f0;--muted:#666680;--radius:16px}
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:32px 16px;background-image:radial-gradient(ellipse 60% 40% at 80% 10%,#1a1030 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 10% 80%,#0d1a0a 0%,transparent 50%)}
-  .wrap{max-width:720px;margin:0 auto}
-  header{margin-bottom:40px}
-  .badge{display:inline-block;background:var(--accent);color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:14px}
-  h1{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,44px);font-weight:800;line-height:1.1;letter-spacing:-1px}
-  h1 span{color:var(--accent)}
-  .sub{margin-top:10px;color:var(--muted);font-size:15px;font-weight:300}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px}
-  label{display:block;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-  input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 16px;outline:none;transition:border-color .2s}
-  input:focus,select:focus,textarea:focus{border-color:var(--accent)}
-  textarea{resize:vertical;min-height:80px}
-  select option{background:var(--surface)}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media(max-width:520px){.grid2{grid-template-columns:1fr}}
-  .field{margin-bottom:20px}
-  .field:last-child{margin-bottom:0}
-  .platforms{display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
-  .pill-btn{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;padding:7px 16px;cursor:pointer;transition:all .2s;text-transform:uppercase}
-  .pill-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--card:#1a1a1a;--border:#2a2a2a;--accent:#c8f135;--text:#f0f0f0;--muted:#888;--radius:14px}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:24px 16px}
+.wrap{max-width:560px;margin:0 auto}
 
-  .mode-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:24px}
-  .mode-tab{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s}
-  .mode-tab:hover{border-color:var(--accent)}
-  .mode-tab.active{background:rgba(200,241,53,.08);border-color:var(--accent)}
-  .mode-tab .tab-icon{font-size:22px;margin-bottom:5px}
-  .mode-tab .tab-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text)}
-  .mode-tab .tab-desc{font-size:10px;color:var(--muted);margin-top:2px}
-  .mode-tab.active .tab-title{color:var(--accent)}
-  .mode-panel{display:none}
-  .mode-panel.active{display:block}
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+.logo{font-size:18px;font-weight:600;color:var(--accent)}
+.credits{font-size:13px;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:99px}
 
-  .upload-zone{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;position:relative;min-height:90px}
-  .upload-zone:hover{border-color:var(--accent)}
-  .upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;padding:0}
-  .upload-text{color:var(--muted);font-size:14px}
-  .upload-text span{color:var(--accent)}
-  .photos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:14px}
-  .photo-thumb{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;border:1px solid var(--border)}
-  .photo-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-  .photo-thumb .remove-one{position:absolute;top:5px;right:5px;background:rgba(0,0,0,.8);border:none;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-  .photos-actions{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-  .photo-count-label{font-size:12px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:700}
-  .clear-all-btn{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:5px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
-  .clear-all-btn:hover{border-color:#ff6b6b;color:#ff6b6b}
+/* Toggle photo/sans photo */
+.toggle-wrap{display:flex;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+.toggle-btn{flex:1;padding:10px;text-align:center;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--muted)}
+.toggle-btn.active{background:var(--accent);color:#000}
 
-  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
-  .toggle-row:last-child{border-bottom:none;padding-bottom:0}
-  .toggle-row:first-child{padding-top:0}
-  .toggle-label{font-size:14px;color:var(--text)}
-  .toggle-label small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
-  .toggle{position:relative;width:42px;height:24px;flex-shrink:0}
-  .toggle input{opacity:0;width:0;height:0}
-  .toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:24px;cursor:pointer;transition:.2s}
-  .toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
-  .toggle input:checked+.toggle-slider{background:var(--accent)}
-  .toggle input:checked+.toggle-slider:before{transform:translateX(18px);background:#000}
+/* Upload zone */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all .2s;position:relative;margin-bottom:20px;display:none}
+.upload-zone.visible{display:block}
+.upload-zone:hover{border-color:var(--accent)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:32px;margin-bottom:8px}
+.upload-text{font-size:14px;color:var(--muted)}
+.upload-text span{color:var(--accent)}
+.photos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:12px}
+.photo-thumb{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;border:1px solid var(--border)}
+.photo-thumb img{width:100%;height:100%;object-fit:cover}
+.photo-thumb .rm{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.8);border:none;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
-  .btn-generate{width:100%;background:var(--accent);color:#000;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;letter-spacing:1px;padding:18px;cursor:pointer;transition:all .2s;text-transform:uppercase;margin-top:4px}
-  .btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(200,241,53,.25)}
-  .btn-generate:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
-  .loader{display:none;align-items:center;gap:10px;color:var(--muted);font-size:14px;padding:16px 0}
-  .loader.show{display:flex}
-  .dots span{display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;animation:bounce .8s infinite}
-  .dots span:nth-child(2){animation-delay:.15s}
-  .dots span:nth-child(3){animation-delay:.3s}
-  @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.3}40%{transform:translateY(-6px);opacity:1}}
+/* Form */
+.form-group{margin-bottom:16px}
+.form-label{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:8px;display:block}
+.form-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;padding:14px 16px;outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:#444}
+select.form-input{cursor:pointer}
+select.form-input option{background:var(--card)}
 
-  .results{display:none}
-  .results.show{display:block}
-  .post-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;animation:fadeUp .4s ease both}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  .post-photo-wrap{width:100%;height:260px;overflow:hidden}
-  .post-photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
-  .post-body{padding:22px}
-  .post-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .post-platform{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
-  .post-actions{display:flex;gap:8px;flex-wrap:wrap}
-  .copy-btn,.dl-btn{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:5px 12px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
-  .copy-btn:hover,.dl-btn:hover{border-color:var(--accent);color:var(--accent)}
-  .copy-btn.copied{border-color:var(--accent);color:var(--accent)}
-  .post-text{font-size:15px;line-height:1.7;white-space:pre-wrap;color:var(--text)}
-  .post-extra{margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
-  .post-extra-label{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-  .post-extra-text{font-size:13px;color:var(--muted);line-height:1.6;font-style:italic}
+/* Plateformes */
+.platforms{display:flex;gap:8px;flex-wrap:wrap}
+.plat-btn{background:var(--card);border:1px solid var(--border);border-radius:99px;color:var(--muted);font-size:13px;font-weight:500;padding:8px 18px;cursor:pointer;transition:all .2s}
+.plat-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
 
-  @keyframes pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
-  .post-photo-wrap.generating{background:linear-gradient(135deg,#0a0a0f,#13131a)}
-  .error-box{background:#1a0a0a;border:1px solid #3a1010;border-radius:12px;color:#ff6b6b;padding:16px;font-size:14px;display:none;margin-top:16px}
-  .error-box.show{display:block}
-  .section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;margin-top:28px}
-  .info-box{background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.2);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--muted);margin-bottom:16px}
-  .info-box strong{color:var(--accent)}
+/* Grid 2 cols */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:400px){.grid2{grid-template-columns:1fr}}
+
+/* Bouton générer */
+.btn-gen{width:100%;background:var(--accent);color:#000;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:16px;font-weight:600;padding:16px;cursor:pointer;transition:all .2s;margin-top:8px}
+.btn-gen:hover{opacity:.9;transform:translateY(-1px)}
+.btn-gen:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* Loader */
+.loader{display:none;align-items:center;justify-content:center;gap:10px;padding:20px;color:var(--muted);font-size:14px}
+.loader.show{display:flex}
+.dots span{display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;animation:bounce .7s infinite}
+.dots span:nth-child(2){animation-delay:.15s}
+.dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.3}40%{transform:translateY(-7px);opacity:1}}
+
+/* Résultats */
+.results{display:none;margin-top:28px}
+.results.show{display:block}
+.results-title{font-size:13px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+
+/* Post card */
+.post-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;animation:up .4s ease both}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.post-img{width:100%;height:200px;object-fit:cover;display:block}
+.post-body{padding:18px}
+.post-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.post-platform{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
+.post-btns{display:flex;gap:8px}
+.btn-sm{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:5px 12px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm.ok{border-color:var(--accent);color:var(--accent)}
+.post-text{font-size:14px;line-height:1.7;color:var(--text);white-space:pre-wrap}
+.post-extra{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.6;font-style:italic}
+.post-extra-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px}
+
+/* Error */
+.err{background:#1a0808;border:1px solid #3a1010;border-radius:12px;color:#ff6b6b;padding:14px 16px;font-size:13px;display:none;margin-top:12px}
+.err.show{display:block}
+
+/* Separator */
+.sep{height:1px;background:var(--border);margin:20px 0}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="badge">✦ Propulsé par IA</div>
-    <h1>Génère tes posts<br><span>réseaux sociaux</span></h1>
-    <p class="sub">Texte ou avec tes photos — des posts complets en secondes.</p>
-  </header>
 
-  <div class="mode-tabs" style="grid-template-columns:1fr 1fr 1fr 1fr">
-    <div class="mode-tab active" onclick="setMode('text')" id="tab-text">
-      <div class="tab-icon">✍️</div>
-      <div class="tab-title">Texte</div>
-      <div class="tab-desc">Texte uniquement</div>
+  <div class="header">
+    <div class="logo">PostIA ✦</div>
+    <div class="credits">200 posts restants</div>
+  </div>
+
+  <!-- Toggle avec/sans photo -->
+  <div class="toggle-wrap">
+    <div class="toggle-btn active" id="btnSans" onclick="setPhoto(false)">✍️ Sans photo</div>
+    <div class="toggle-btn" id="btnAvec" onclick="setPhoto(true)">📸 Avec mes photos</div>
+    <div class="toggle-btn" id="btnIA" onclick="setPhoto('ia')">🤖 Image IA</div>
+  </div>
+
+  <!-- Upload photos -->
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotos(event)" />
+    <div class="upload-icon">📸</div>
+    <p class="upload-text">Glisse tes photos ou <span>clique pour choisir</span></p>
+    <p class="upload-text" style="font-size:12px;margin-top:4px">Plusieurs photos acceptées</p>
+    <div class="photos-grid" id="photosGrid"></div>
+  </div>
+
+  <!-- Style IA (si mode IA) -->
+  <div class="form-group" id="iaStyleGroup" style="display:none">
+    <label class="form-label">Style des images</label>
+    <select class="form-input" id="iaStyle">
+      <option value="lifestyle photography, warm natural light, authentic">🌿 Lifestyle naturel</option>
+      <option value="minimalist flat lay, pastel colors, Instagram aesthetic" selected>✨ Flat lay Instagram</option>
+      <option value="professional product photography, clean white background">📦 Produit professionnel</option>
+      <option value="food photography, appetizing, restaurant lighting">🍽️ Food photography</option>
+      <option value="luxury editorial photography, cinematic lighting">💎 Luxe & élégance</option>
+      <option value="fitness photography, energetic, action shot">💪 Fitness & sport</option>
+    </select>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="form-group">
+    <label class="form-label">Ton activité</label>
+    <input type="text" class="form-input" id="business" placeholder="Ex: restaurant italien à Toulon, coiffeur femme à Lyon..." />
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Promo ou message du moment <span style="color:#555;font-weight:400">(optionnel)</span></label>
+    <input type="text" class="form-input" id="promo" placeholder="Ex: -20% ce weekend, nouveau menu disponible..." />
+  </div>
+
+  <div class="grid2">
+    <div class="form-group">
+      <label class="form-label">Ton de voix</label>
+      <select class="form-input" id="tone">
+        <option value="sympathique et chaleureux" selected>😊 Sympathique</option>
+        <option value="professionnel">💼 Professionnel</option>
+        <option value="humoristique">😄 Humoristique</option>
+        <option value="luxe et raffiné">✨ Luxe</option>
+        <option value="dynamique et énergique">⚡ Dynamique</option>
+      </select>
     </div>
-    <div class="mode-tab" onclick="setMode('aiphoto')" id="tab-aiphoto">
-      <div class="tab-icon">🤖</div>
-      <div class="tab-title">Image IA</div>
-      <div class="tab-desc">Nano Banana</div>
-    </div>
-    <div class="mode-tab" onclick="setMode('myphoto')" id="tab-myphoto">
-      <div class="tab-icon">📸</div>
-      <div class="tab-title">Mes photos</div>
-      <div class="tab-desc">Tes propres photos</div>
-    </div>
-    <div class="mode-tab" onclick="setMode('both')" id="tab-both">
-      <div class="tab-icon">🚀</div>
-      <div class="tab-title">Complet</div>
-      <div class="tab-desc">Photos + options</div>
+    <div class="form-group">
+      <label class="form-label">Nombre de posts</label>
+      <select class="form-input" id="count">
+        <option value="3">3 posts</option>
+        <option value="5" selected>5 posts</option>
+        <option value="7">7 posts</option>
+      </select>
     </div>
   </div>
 
-  <!-- TEXTE -->
-  <div class="mode-panel active" id="panel-text">
-    <div class="info-box">L'IA génère <strong>uniquement le texte</strong> du post.</div>
-  </div>
-
-  <!-- IMAGE IA - NANO BANANA -->
-  <div class="mode-panel" id="panel-aiphoto">
-    <div class="info-box">L'IA génère une <strong>image pour chaque post</strong> via <strong>Nano Banana (Gemini)</strong> — 100% gratuit, aucune clé API requise.</div>
-    <div class="card">
-      <div class="field">
-        <label>Style des images</label>
-        <select id="aiStyle">
-          <option value="lifestyle photography, warm natural light, authentic" selected>🌿 Lifestyle naturel</option>
-          <option value="minimalist flat lay, pastel colors, soft shadows, Instagram">✨ Flat lay Instagram</option>
-          <option value="professional product photography, clean white background">📦 Produit pro</option>
-          <option value="food photography, appetizing close-up, restaurant lighting">🍽️ Food photography</option>
-          <option value="luxury editorial photography, elegant, cinematic lighting">💎 Luxe & élégance</option>
-          <option value="fitness photography, energetic, gym, action shot">💪 Fitness & sport</option>
-          <option value="vibrant colorful street photography, urban energy">🏙️ Street dynamique</option>
-          <option value="nature outdoor photography, fresh, green, eco-friendly">🌱 Nature & éco</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Description supplémentaire (optionnel)</label>
-        <input type="text" id="aiExtraPrompt" placeholder="Ex: avec des fleurs roses, fond bleu, ambiance cosy..." />
-      </div>
+  <div class="form-group">
+    <label class="form-label">Réseaux sociaux</label>
+    <div class="platforms">
+      <button class="plat-btn active" data-p="Instagram">Instagram</button>
+      <button class="plat-btn active" data-p="Facebook">Facebook</button>
+      <button class="plat-btn" data-p="LinkedIn">LinkedIn</button>
+      <button class="plat-btn" data-p="TikTok">TikTok</button>
+      <button class="plat-btn" data-p="Twitter/X">Twitter/X</button>
     </div>
   </div>
 
-  <!-- MES PHOTOS -->
-  <div class="mode-panel" id="panel-myphoto">
-    <div class="info-box">Upload tes photos — l'IA génère un <strong>texte adapté à chaque photo</strong>.</div>
-    <div class="card">
-      <div class="field">
-        <label>Tes photos <span id="photoCount1" style="color:var(--accent);font-size:11px"></span></label>
-        <div class="upload-zone">
-          <input type="file" id="photoInput1" accept="image/*" multiple onchange="handlePhotos(event,1)" />
-          <div style="font-size:28px;margin-bottom:6px">📸</div>
-          <p class="upload-text">Glisse tes photos ou <span>clique pour choisir</span></p>
-          <p class="upload-text" style="font-size:11px;margin-top:3px">Plusieurs photos acceptées (max 10)</p>
-        </div>
-        <div class="photos-grid" id="photosGrid1"></div>
-        <div class="photos-actions" id="photosActions1" style="display:none">
-          <span class="photo-count-label" id="photosLabel1"></span>
-          <button class="clear-all-btn" onclick="clearPhotos(1)">🗑 Tout supprimer</button>
-        </div>
-      </div>
-    </div>
+  <button class="btn-gen" id="genBtn" onclick="generate()">⚡ Générer mes posts</button>
+
+  <div class="loader" id="loader">
+    <div class="dots"><span></span><span></span><span></span></div>
+    L'IA rédige tes posts...
   </div>
 
-  <!-- COMPLET -->
-  <div class="mode-panel" id="panel-both">
-    <div class="info-box">Post complet : <strong>tes photos</strong> + <strong>texte généré</strong> + options avancées.</div>
-    <div class="card">
-      <div class="field">
-        <label>Tes photos <span id="photoCount2" style="color:var(--accent);font-size:11px"></span></label>
-        <div class="upload-zone">
-          <input type="file" id="photoInput2" accept="image/*" multiple onchange="handlePhotos(event,2)" />
-          <div style="font-size:28px;margin-bottom:6px">📸</div>
-          <p class="upload-text">Glisse tes photos ou <span>clique pour choisir</span></p>
-        </div>
-        <div class="photos-grid" id="photosGrid2"></div>
-        <div class="photos-actions" id="photosActions2" style="display:none">
-          <span class="photo-count-label" id="photosLabel2"></span>
-          <button class="clear-all-btn" onclick="clearPhotos(2)">🗑 Tout supprimer</button>
-        </div>
-      </div>
-      <div class="field">
-        <label>Options</label>
-        <div class="toggle-row">
-          <div class="toggle-label">Hashtags séparés <small>Liste optimisée en plus du post</small></div>
-          <label class="toggle"><input type="checkbox" id="toggleHashtags" /><span class="toggle-slider"></span></label>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-label">Description visuelle <small>Pour briefer un graphiste ou créer tes stories</small></div>
-          <label class="toggle"><input type="checkbox" id="toggleDesc" /><span class="toggle-slider"></span></label>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="err" id="err"></div>
 
-  <!-- FORMULAIRE COMMUN -->
-  <div class="card">
-    <div class="field">
-      <label>Ton business / activité</label>
-      <input type="text" id="business" placeholder="Ex: Restaurant italien à Toulon, Coach sportif, Boutique vêtements..." />
-    </div>
-    <div class="field">
-      <label>Message ou promo du moment (optionnel)</label>
-      <input type="text" id="promo" placeholder="Ex: Soldes -30%, nouveau menu, promotion spéciale..." />
-    </div>
-    <div class="grid2">
-      <div class="field">
-        <label>Ton de voix</label>
-        <select id="tone">
-          <option value="professionnel">Professionnel</option>
-          <option value="sympathique et chaleureux" selected>Sympathique</option>
-          <option value="humoristique">Humoristique</option>
-          <option value="luxe et raffiné">Luxe et Raffiné</option>
-          <option value="dynamique et énergique">Dynamique</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Nombre de posts</label>
-        <select id="count">
-          <option value="3">3 posts</option>
-          <option value="5" selected>5 posts</option>
-          <option value="7">7 posts</option>
-        </select>
-      </div>
-    </div>
-    <div class="field">
-      <label>Plateformes ciblées</label>
-      <div class="platforms">
-        <button class="pill-btn active" data-p="Instagram">Instagram</button>
-        <button class="pill-btn active" data-p="Facebook">Facebook</button>
-        <button class="pill-btn" data-p="LinkedIn">LinkedIn</button>
-        <button class="pill-btn" data-p="TikTok">TikTok</button>
-        <button class="pill-btn" data-p="Twitter/X">Twitter/X</button>
-      </div>
-    </div>
-  </div>
-
-  <button class="btn-generate" id="generateBtn" onclick="generate()">⚡ Générer mes posts</button>
-  <div class="loader" id="loader"><div class="dots"><span></span><span></span><span></span></div>L'IA crée tes posts...</div>
-  <div class="error-box" id="errorBox"></div>
   <div class="results" id="results">
-    <p class="section-title">Tes posts générés</p>
+    <div class="sep"></div>
+    <div class="results-title">Tes posts générés</div>
     <div id="postsContainer"></div>
   </div>
+
 </div>
-
 <script>
-var currentMode = 'text';
-var photos = { 1: [], 2: [] };
+var mode = 'sans';
+var photos = [];
 
-function setMode(mode) {
-  currentMode = mode;
-  ['text','aiphoto','myphoto','both'].forEach(function(m) {
-    document.getElementById('tab-'+m).classList.toggle('active', m===mode);
-    document.getElementById('panel-'+m).classList.toggle('active', m===mode);
-  });
+function setPhoto(val) {
+  mode = val === true ? 'avec' : val === 'ia' ? 'ia' : 'sans';
+  document.getElementById('btnSans').classList.toggle('active', mode==='sans');
+  document.getElementById('btnAvec').classList.toggle('active', mode==='avec');
+  document.getElementById('btnIA').classList.toggle('active', mode==='ia');
+  document.getElementById('uploadZone').classList.toggle('visible', mode==='avec');
+  document.getElementById('iaStyleGroup').style.display = mode==='ia' ? 'block' : 'none';
 }
 
-document.querySelectorAll('.pill-btn[data-p]').forEach(function(btn) {
-  btn.addEventListener('click', function() { btn.classList.toggle('active'); });
+document.querySelectorAll('.plat-btn').forEach(function(b){
+  b.addEventListener('click',function(){ b.classList.toggle('active'); });
 });
 
-function handlePhotos(event, slot) {
-  var files = Array.from(event.target.files).slice(0, 10 - photos[slot].length);
-  var loaded = 0;
-  files.forEach(function(file) {
+function handlePhotos(e) {
+  var files = Array.from(e.target.files).slice(0, 10 - photos.length);
+  files.forEach(function(f){
     var r = new FileReader();
-    r.onload = function(e) {
-      photos[slot].push({ dataUrl: e.target.result, name: file.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ') });
-      loaded++;
-      if (loaded === files.length) renderGrid(slot);
+    r.onload = function(ev){
+      photos.push({ dataUrl: ev.target.result, name: f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ') });
+      renderGrid();
     };
-    r.readAsDataURL(file);
+    r.readAsDataURL(f);
   });
-  event.target.value = '';
+  e.target.value='';
 }
 
-function removePhoto(slot, i) { photos[slot].splice(i,1); renderGrid(slot); }
-function clearPhotos(slot) { photos[slot]=[]; renderGrid(slot); }
+function removePhoto(i){ photos.splice(i,1); renderGrid(); }
 
-function renderGrid(slot) {
-  var grid = document.getElementById('photosGrid'+slot);
-  var actions = document.getElementById('photosActions'+slot);
-  var countEl = document.getElementById('photoCount'+slot);
-  var labelEl = document.getElementById('photosLabel'+slot);
-  var n = photos[slot].length;
-  if (countEl) countEl.textContent = n ? '('+n+' photo'+(n>1?'s':'')+')' : '';
-  if (labelEl) labelEl.textContent = n+' photo'+(n>1?'s':'')+' sélectionnée'+(n>1?'s':'');
-  if (actions) actions.style.display = n ? 'flex' : 'none';
-  if (!grid) return;
-  grid.innerHTML = '';
-  photos[slot].forEach(function(p,i) {
-    var d = document.createElement('div');
-    d.className = 'photo-thumb';
-    d.innerHTML = '<img src="'+p.dataUrl+'" /><button class="remove-one" onclick="removePhoto('+slot+','+i+')">✕</button>';
-    grid.appendChild(d);
+function renderGrid(){
+  var g = document.getElementById('photosGrid');
+  g.innerHTML='';
+  photos.forEach(function(p,i){
+    var d=document.createElement('div');
+    d.className='photo-thumb';
+    d.innerHTML='<img src="'+p.dataUrl+'" /><button class="rm" onclick="removePhoto('+i+')">✕</button>';
+    g.appendChild(d);
   });
 }
 
-function getSelectedPlatforms() {
-  return Array.from(document.querySelectorAll('.pill-btn[data-p].active')).map(function(b){ return b.dataset.p; });
+function getPlatforms(){
+  return Array.from(document.querySelectorAll('.plat-btn.active')).map(function(b){ return b.dataset.p; });
 }
 
-function showError(msg) {
-  var el = document.getElementById('errorBox');
-  el.textContent = msg;
-  el.classList.add('show');
+function showErr(msg){
+  var e=document.getElementById('err');
+  e.textContent=msg; e.classList.add('show');
 }
 
-async function generate() {
-  var business = document.getElementById('business').value.trim();
-  var promo = document.getElementById('promo').value.trim();
-  var tone = document.getElementById('tone').value;
-  var count = parseInt(document.getElementById('count').value);
-  var platforms = getSelectedPlatforms();
+async function generate(){
+  var business=document.getElementById('business').value.trim();
+  var promo=document.getElementById('promo').value.trim();
+  var tone=document.getElementById('tone').value;
+  var count=document.getElementById('count').value;
+  var platforms=getPlatforms();
 
-  document.getElementById('errorBox').classList.remove('show');
-  if (!business) { showError('Décris ton business pour continuer.'); return; }
-  if (!platforms.length) { showError('Sélectionne au moins une plateforme.'); return; }
+  document.getElementById('err').classList.remove('show');
+  if(!business){ showErr('Décris ton activité pour continuer.'); return; }
+  if(!platforms.length){ showErr('Sélectionne au moins un réseau social.'); return; }
+  if(mode==='avec' && photos.length===0){ showErr('Ajoute au moins une photo.'); return; }
 
-  var slot = currentMode === 'myphoto' ? 1 : 2;
-  var activePhotos = (currentMode === 'myphoto' || currentMode === 'both') ? photos[slot] : [];
-
-  if ((currentMode === 'myphoto' || currentMode === 'both') && activePhotos.length === 0) {
-    showError('Ajoute au moins une photo.'); return;
-  }
-
-  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('genBtn').disabled=true;
   document.getElementById('loader').classList.add('show');
   document.getElementById('results').classList.remove('show');
 
-  var needsAiImage = currentMode === 'aiphoto';
-  var withHashtags = currentMode === 'both' && document.getElementById('toggleHashtags').checked;
-  var withDesc = currentMode === 'both' && document.getElementById('toggleDesc').checked;
-
+  var photoLine = photos.length > 0
+    ? '- Photos uploadées : '+photos.map(function(p){ return '"'+p.name+'"'; }).join(', ')+'.\n' : '';
   var promoLine = promo ? '- Promo : '+promo+'\n' : '';
-  var photoLine = activePhotos.length > 0
-    ? '- '+activePhotos.length+' photo(s) uploadée(s) : '+activePhotos.map(function(p){ return '"'+p.name+'"'; }).join(', ')+'.\n'
-    : '';
-
+  var iaLine = mode==='ia' ? '- Pour chaque post ajoute "image_prompt": prompt anglais 15 mots max décrivant une image. Style: '+document.getElementById('iaStyle').value+'.\n' : '';
   var extraFields = '';
-  if (needsAiImage) extraFields += ', "image_prompt": "english prompt max 15 words"';
-  if (withHashtags) extraFields += ', "hashtags": "#tag1 #tag2"';
-  if (withDesc) extraFields += ', "visual_desc": "description visuelle courte"';
-  if (activePhotos.length > 0) extraFields += ', "photo_index": 0';
+  if(mode==='ia') extraFields+=', "image_prompt": "..."';
+  if(photos.length>0) extraFields+=', "photo_index": 0';
 
-  var extraInstructions = '';
-  if (needsAiImage) {
-    var aiStyle = document.getElementById('aiStyle').value;
-    var aiExtra = document.getElementById('aiExtraPrompt').value.trim();
-    extraInstructions += '\n- Pour chaque post ajoute "image_prompt": prompt ANGLAIS max 15 mots décrivant une scène visuelle. Style: ' + aiStyle + (aiExtra ? '. Détails: ' + aiExtra : '') + '.';
-  }
-  if (withDesc) extraInstructions += '\n- Pour chaque post, ajoute "visual_desc" : 2-3 phrases décrivant comment mettre en scène la photo (cadrage, ambiance, couleurs).';
-  if (withHashtags) extraInstructions += '\n- Pour chaque post, ajoute "hashtags" : 10-15 hashtags optimisés séparés par des espaces.';
+  var prompt='Tu es expert marketing digital.\n\nGénère exactement '+count+' posts pour:\n- Business: '+business+'\n- Plateformes: '+platforms.join(', ')+'\n'+promoLine+photoLine+iaLine+'- Ton: '+tone+'\n\nVarie les angles, adapte à chaque plateforme, emojis + appel à l\'action.\n\nJSON uniquement sans backticks:\n{"posts":[{"platform":"nom","content":"texte"'+extraFields+'},…]}';
 
-  var prompt = 'Tu es expert marketing digital.\n\nGénère exactement '+count+' posts pour:\n- Business: '+business+'\n- Plateformes: '+platforms.join(', ')+'\n'+promoLine+photoLine+'- Ton: '+tone+'\n\nVarie les angles, adapte à chaque plateforme, emojis + appel à l\'action.'+extraInstructions+'\n\nJSON uniquement sans backticks:\n{"posts": [{"platform": "nom", "content": "texte"'+extraFields+'}, ...]}';
-
-  try {
-    var res = await fetch('/api/generate', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ messages: [{ role:'user', content:prompt }] })
+  try{
+    var res=await fetch('/api/generate',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'user',content:prompt}]})
     });
-    if (!res.ok) { var e2 = await res.json(); throw new Error(e2.error||'Erreur '+res.status); }
-    var data = await res.json();
-    var text = (data.content||[]).map(function(b){ return b.text||''; }).join('');
-    var clean = text.replace(/```json|```/g,'').trim();
-    var parsed = JSON.parse(clean);
-    renderPosts(parsed.posts||[], activePhotos);
-  } catch(e) {
-    showError('Erreur: '+(e.message||'Réessaie.'));
-  } finally {
-    document.getElementById('generateBtn').disabled = false;
+    if(!res.ok){ var e2=await res.json(); throw new Error(e2.error||'Erreur '+res.status); }
+    var data=await res.json();
+    var text=(data.content||[]).map(function(b){ return b.text||''; }).join('');
+    var clean=text.replace(/```json|```/g,'').trim();
+    var parsed=JSON.parse(clean);
+    renderPosts(parsed.posts||[]);
+  }catch(e){
+    showErr('Erreur: '+(e.message||'Réessaie.'));
+  }finally{
+    document.getElementById('genBtn').disabled=false;
     document.getElementById('loader').classList.remove('show');
   }
 }
 
-function renderPosts(posts, activePhotos) {
-  var container = document.getElementById('postsContainer');
-  container.innerHTML = '';
-  if (!posts.length) { showError('Aucun post généré. Réessaie.'); return; }
+function renderPosts(posts){
+  var c=document.getElementById('postsContainer');
+  c.innerHTML='';
+  if(!posts.length){ showErr('Aucun post généré.'); return; }
 
-  posts.forEach(function(post, i) {
-    var card = document.createElement('div');
-    card.className = 'post-card';
-    card.style.animationDelay = (i*0.08)+'s';
+  posts.forEach(function(post,i){
+    var card=document.createElement('div');
+    card.className='post-card';
+    card.style.animationDelay=(i*.07)+'s';
 
-    var photoHtml = '';
-    var dlBtn = '';
+    var photoHtml='';
+    var dlBtn='';
 
-    if (activePhotos.length > 0) {
-      var idx = (typeof post.photo_index==='number' && post.photo_index>=0 && post.photo_index<activePhotos.length) ? post.photo_index : (i%activePhotos.length);
-      photoHtml = '<div class="post-photo-wrap"><img src="'+activePhotos[idx].dataUrl+'" /></div>';
-      dlBtn = '<button class="dl-btn" onclick="dlPhoto('+idx+','+i+')">⬇ Photo</button>';
+    if(photos.length>0){
+      var idx=(typeof post.photo_index==='number'&&post.photo_index>=0&&post.photo_index<photos.length)?post.photo_index:(i%photos.length);
+      photoHtml='<img class="post-img" src="'+photos[idx].dataUrl+'" />';
+      dlBtn='<button class="btn-sm" onclick="dlPhoto('+idx+','+i+')">⬇ Photo</button>';
+    } else if(mode==='ia'&&post.image_prompt){
+      var style=document.getElementById('iaStyle').value;
+      var fullPrompt=post.image_prompt+', '+style;
+      photoHtml='<div class="post-img" id="aiwrap-'+i+'" style="display:flex;align-items:center;justify-content:center;background:#111;flex-direction:column;gap:8px"><div style="font-size:28px;animation:bounce .7s infinite">🎨</div><div style="font-size:12px;color:#555">Génération...</div></div>';
+      dlBtn='<button class="btn-sm" id="aidl-'+i+'" style="display:none" onclick="dlAi('+i+')">⬇ Image</button>';
+      setTimeout(function(ci,p){ genAiImg(ci,p); }.bind(null,i,fullPrompt), i*800);
     }
 
-    if (currentMode === 'aiphoto' && post.image_prompt) {
-      var aiStyle2 = document.getElementById('aiStyle').value;
-      var aiExtra2 = document.getElementById('aiExtraPrompt').value.trim();
-      var fullPrompt = post.image_prompt + ', ' + aiStyle2 + (aiExtra2 ? ', ' + aiExtra2 : '');
-      photoHtml = '<div class="post-photo-wrap generating" id="aiwrap-'+i+'" style="display:flex;align-items:center;justify-content:center"><div style="text-align:center"><div style="font-size:36px;animation:pulse 1.5s infinite">🎨</div><div style="font-size:13px;color:#666;margin-top:8px;font-family:Syne,sans-serif">Nano Banana génère...</div><div style="font-size:11px;color:#444;margin-top:4px;padding:0 16px">'+escHtml(post.image_prompt)+'</div></div></div>';
-      dlBtn = '<button class="dl-btn" id="aidl-'+i+'" style="display:none" onclick="dlAiPhoto('+i+')">⬇ Image</button>';
-      setTimeout(function(ci, p){ generateAiImage(ci, p); }.bind(null, i, fullPrompt), i * 1000);
-    }
-
-    var hashHtml = post.hashtags ? '<div class="post-extra"><div class="post-extra-label"># Hashtags</div><div class="post-extra-text">'+escHtml(post.hashtags)+'</div></div>' : '';
-    var descHtml = post.visual_desc ? '<div class="post-extra"><div class="post-extra-label">📐 Description visuelle</div><div class="post-extra-text">'+escHtml(post.visual_desc)+'</div></div>' : '';
-
-    card.innerHTML = photoHtml +
-      '<div class="post-body">' +
-        '<div class="post-header">' +
-          '<span class="post-platform">'+escHtml(post.platform)+'</span>' +
-          '<div class="post-actions">'+dlBtn+'<button class="copy-btn" onclick="copyPost(this,\'post-'+i+'\')">Copier</button></div>' +
-        '</div>' +
-        '<div class="post-text" id="post-'+i+'">'+escHtml(post.content)+'</div>' +
-        hashHtml + descHtml +
+    card.innerHTML=photoHtml+
+      '<div class="post-body">'+
+        '<div class="post-top">'+
+          '<span class="post-platform">'+escH(post.platform)+'</span>'+
+          '<div class="post-btns">'+dlBtn+'<button class="btn-sm" onclick="copy(this,\'pt-'+i+'\')">Copier</button></div>'+
+        '</div>'+
+        '<div class="post-text" id="pt-'+i+'">'+escH(post.content)+'</div>'+
       '</div>';
-
-    container.appendChild(card);
+    c.appendChild(card);
   });
 
   document.getElementById('results').classList.add('show');
 }
 
-async function generateAiImage(i, prompt) {
-  var wrap = document.getElementById('aiwrap-'+i);
-  if (!wrap) return;
-  try {
-    var res = await fetch('/api/image', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ prompt: prompt })
-    });
-    var data = await res.json();
-    if (!data.image) throw new Error(data.error || 'Pas d image');
-    wrap.innerHTML = '';
-    wrap.classList.remove('generating');
-    var img = document.createElement('img');
-    img.src = data.image;
-    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-    wrap.appendChild(img);
-    var dl = document.getElementById('aidl-'+i);
-    if (dl) { dl.style.display=''; dl.dataset.src = data.image; }
-  } catch(e) {
-    if (wrap) wrap.innerHTML = '<div style="text-align:center;padding:20px"><div style="font-size:28px">❌</div><div style="font-size:13px;color:#ff6b6b;margin-top:8px">'+(e.message||'Erreur Gemini')+'</div></div>';
+async function genAiImg(i,prompt){
+  var wrap=document.getElementById('aiwrap-'+i);
+  if(!wrap)return;
+  try{
+    var res=await fetch('/api/image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt})});
+    var data=await res.json();
+    if(!data.image)throw new Error(data.error||'Erreur');
+    wrap.outerHTML='<img class="post-img" id="aiimg-'+i+'" src="'+data.image+'" />';
+    var dl=document.getElementById('aidl-'+i);
+    if(dl){dl.style.display='';dl.dataset.src=data.image;}
+  }catch(e){
+    if(wrap)wrap.innerHTML='<div style="color:#ff6b6b;font-size:13px;padding:20px;text-align:center">❌ '+(e.message||'Erreur')+'<br><button onclick="genAiImg('+i+',\''+prompt+'\')" style="margin-top:8px;background:transparent;border:1px solid #ff6b6b;color:#ff6b6b;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px">🔄 Réessayer</button></div>';
   }
 }
 
-function dlAiPhoto(i) {
-  var btn = document.getElementById('aidl-'+i);
-  if (!btn || !btn.dataset.src) return;
-  var a = document.createElement('a');
-  a.href = btn.dataset.src; a.download='nano-banana-post-'+(i+1)+'.png'; a.click();
+function dlAi(i){
+  var btn=document.getElementById('aidl-'+i);
+  if(!btn||!btn.dataset.src)return;
+  var a=document.createElement('a');
+  a.href=btn.dataset.src;a.download='image-ia-'+(i+1)+'.png';a.click();
 }
 
-function dlPhoto(photoIdx, postIdx) {
-  var slot = currentMode === 'myphoto' ? 1 : 2;
-  if (!photos[slot][photoIdx]) return;
-  var a = document.createElement('a');
-  a.href = photos[slot][photoIdx].dataUrl;
-  a.download = 'photo-post-'+(postIdx+1)+'.jpg';
-  a.click();
+function dlPhoto(photoIdx,postIdx){
+  if(!photos[photoIdx])return;
+  var a=document.createElement('a');
+  a.href=photos[photoIdx].dataUrl;a.download='photo-post-'+(postIdx+1)+'.jpg';a.click();
 }
 
-function escHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function copyPost(btn, id) {
-  var text = document.getElementById(id).innerText;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.textContent='✓ Copié!'; btn.classList.add('copied');
-    setTimeout(function(){ btn.textContent='Copier'; btn.classList.remove('copied'); },2000);
+function copy(btn,id){
+  var t=document.getElementById(id);
+  if(!t)return;
+  navigator.clipboard.writeText(t.innerText).then(function(){
+    btn.textContent='✓ Copié!';btn.classList.add('ok');
+    setTimeout(function(){btn.textContent='Copier';btn.classList.remove('ok');},2000);
   });
 }
+
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
 </body>
 </html>
