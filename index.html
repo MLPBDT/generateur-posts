@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PostIA — Générateur de posts réseaux sociaux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0f0f0f;--card:#1a1a1a;--border:#2a2a2a;--accent:#c8f135;--text:#f0f0f0;--muted:#888;--radius:14px}
@@ -12,139 +12,162 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .wrap{max-width:560px;margin:0 auto}
 
 /* Header */
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
-.logo{font-size:18px;font-weight:600;color:var(--accent)}
-.credits{font-size:13px;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:99px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.logo{font-size:20px;font-weight:800;color:var(--accent);letter-spacing:-0.5px}
+.trial-badge{font-size:13px;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:99px}
+.trial-badge span{color:var(--accent);font-weight:700}
 
-/* Toggle photo/sans photo */
-.toggle-wrap{display:flex;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
-.toggle-btn{flex:1;padding:10px;text-align:center;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--muted)}
-.toggle-btn.active{background:var(--accent);color:#000}
+/* Mode toggle */
+.mode-toggle{display:flex;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:20px}
+.mode-btn{flex:1;padding:10px;text-align:center;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--muted)}
+.mode-btn.active{background:var(--accent);color:#000}
 
-/* Upload zone */
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;cursor:pointer;transition:all .2s;position:relative;margin-bottom:20px;display:none}
-.upload-zone.visible{display:block}
+/* Upload */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:28px;text-align:center;cursor:pointer;transition:all .2s;position:relative;margin-bottom:16px}
 .upload-zone:hover{border-color:var(--accent)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-icon{font-size:32px;margin-bottom:8px}
-.upload-text{font-size:14px;color:var(--muted)}
+.upload-icon{font-size:28px;margin-bottom:6px}
+.upload-text{font-size:13px;color:var(--muted)}
 .upload-text span{color:var(--accent)}
 .photos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:12px}
-.photo-thumb{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;border:1px solid var(--border)}
+.photo-thumb{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1}
 .photo-thumb img{width:100%;height:100%;object-fit:cover}
-.photo-thumb .rm{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.8);border:none;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.photo-thumb .rm{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.8);border:none;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* AI image options */
+.ai-options{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px}
 
 /* Form */
-.form-group{margin-bottom:16px}
-.form-label{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:8px;display:block}
-.form-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;padding:14px 16px;outline:none;transition:border-color .2s}
-.form-input:focus{border-color:var(--accent)}
-.form-input::placeholder{color:#444}
-select.form-input{cursor:pointer}
-select.form-input option{background:var(--card)}
-
-/* Plateformes */
-.platforms{display:flex;gap:8px;flex-wrap:wrap}
-.plat-btn{background:var(--card);border:1px solid var(--border);border-radius:99px;color:var(--muted);font-size:13px;font-weight:500;padding:8px 18px;cursor:pointer;transition:all .2s}
-.plat-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
-
-/* Grid 2 cols */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px}
+.field input,.field select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:12px 14px;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field select option{background:var(--card)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:400px){.grid2{grid-template-columns:1fr}}
 
-/* Bouton générer */
-.btn-gen{width:100%;background:var(--accent);color:#000;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:16px;font-weight:600;padding:16px;cursor:pointer;transition:all .2s;margin-top:8px}
+/* Platforms */
+.platforms{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.plat{background:var(--card);border:1px solid var(--border);border-radius:99px;color:var(--muted);font-size:12px;font-weight:600;padding:7px 16px;cursor:pointer;transition:all .2s}
+.plat.active{background:var(--accent);border-color:var(--accent);color:#000}
+
+/* Generate button */
+.btn-gen{width:100%;background:var(--accent);color:#000;border:none;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;padding:15px;cursor:pointer;transition:all .2s;margin-top:6px}
 .btn-gen:hover{opacity:.9;transform:translateY(-1px)}
 .btn-gen:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
 /* Loader */
-.loader{display:none;align-items:center;justify-content:center;gap:10px;padding:20px;color:var(--muted);font-size:14px}
+.loader{display:none;align-items:center;justify-content:center;gap:10px;padding:18px;color:var(--muted);font-size:13px}
 .loader.show{display:flex}
 .dots span{display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;animation:bounce .7s infinite}
 .dots span:nth-child(2){animation-delay:.15s}
 .dots span:nth-child(3){animation-delay:.3s}
 @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.3}40%{transform:translateY(-7px);opacity:1}}
 
-/* Résultats */
-.results{display:none;margin-top:28px}
+/* Results */
+.results{display:none;margin-top:24px}
 .results.show{display:block}
-.results-title{font-size:13px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+.results-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
 
 /* Post card */
-.post-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;animation:up .4s ease both}
-@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.post-img{width:100%;height:200px;object-fit:cover;display:block}
-.post-body{padding:18px}
-.post-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.post-platform{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
-.post-btns{display:flex;gap:8px}
-.btn-sm{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:5px 12px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
-.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
-.btn-sm.ok{border-color:var(--accent);color:var(--accent)}
-.post-text{font-size:14px;line-height:1.7;color:var(--text);white-space:pre-wrap}
-.post-extra{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.6;font-style:italic}
-.post-extra-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:4px}
+.post-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;animation:up .35s ease both}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.post-img{width:100%;height:220px;object-fit:cover;display:block}
+.post-img-loading{width:100%;height:220px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;font-size:12px;color:var(--muted)}
+.post-body{padding:16px}
+.post-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.post-plat{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
+.post-btns{display:flex;gap:6px}
+.btn-s{background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--muted);font-size:11px;padding:4px 10px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.btn-s:hover{border-color:var(--accent);color:var(--accent)}
+.btn-s.ok{border-color:var(--accent);color:var(--accent)}
+.post-text{font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap}
 
 /* Error */
-.err{background:#1a0808;border:1px solid #3a1010;border-radius:12px;color:#ff6b6b;padding:14px 16px;font-size:13px;display:none;margin-top:12px}
+.err{background:#1a0808;border:1px solid #3a1010;border-radius:10px;color:#ff6b6b;padding:12px 14px;font-size:13px;display:none;margin-top:10px}
 .err.show{display:block}
 
-/* Separator */
-.sep{height:1px;background:var(--border);margin:20px 0}
+/* ── POPUP ESSAI ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.overlay.show{display:flex}
+.popup{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;max-width:420px;width:100%;text-align:center}
+.popup-icon{font-size:48px;margin-bottom:16px}
+.popup-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:-0.5px}
+.popup-sub{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+.popup-plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.plan{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;text-align:left}
+.plan:hover{border-color:var(--accent)}
+.plan.featured{border-color:var(--accent);background:rgba(200,241,53,.05)}
+.plan-name{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.plan-price{font-size:24px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.plan-price span{font-size:13px;font-weight:500;color:var(--muted)}
+.plan-feat{font-size:11px;color:var(--muted);line-height:1.6}
+.plan.featured .plan-name{color:var(--accent)}
+.popup-trial{font-size:12px;color:var(--muted);margin-bottom:16px}
+.popup-trial strong{color:var(--accent)}
+.btn-popup{width:100%;background:var(--accent);color:#000;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;padding:14px;cursor:pointer;margin-bottom:10px}
+.btn-popup-sec{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;padding:10px;cursor:pointer}
+.btn-popup-sec:hover{color:var(--text)}
 </style>
 </head>
 <body>
 <div class="wrap">
-
   <div class="header">
     <div class="logo">PostIA ✦</div>
-    <div class="credits">200 posts restants</div>
+    <div class="trial-badge" id="trialBadge">Essais gratuits : <span id="trialCount">3</span>/3</div>
   </div>
 
-  <!-- Toggle avec/sans photo -->
-  <div class="toggle-wrap">
-    <div class="toggle-btn active" id="btnSans" onclick="setPhoto(false)">✍️ Sans photo</div>
-    <div class="toggle-btn" id="btnAvec" onclick="setPhoto(true)">📸 Avec mes photos</div>
-    <div class="toggle-btn" id="btnIA" onclick="setPhoto('ia')">🤖 Image IA</div>
+  <!-- MODE -->
+  <div class="mode-toggle">
+    <div class="mode-btn active" id="btnSans" onclick="setMode('sans')">✍️ Sans photo</div>
+    <div class="mode-btn" id="btnPhoto" onclick="setMode('photo')">📸 Mes photos</div>
+    <div class="mode-btn" id="btnIA" onclick="setMode('ia')">🤖 Image IA</div>
   </div>
 
-  <!-- Upload photos -->
-  <div class="upload-zone" id="uploadZone">
-    <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotos(event)" />
-    <div class="upload-icon">📸</div>
-    <p class="upload-text">Glisse tes photos ou <span>clique pour choisir</span></p>
-    <p class="upload-text" style="font-size:12px;margin-top:4px">Plusieurs photos acceptées</p>
-    <div class="photos-grid" id="photosGrid"></div>
+  <!-- UPLOAD PHOTOS -->
+  <div id="zonePhoto" style="display:none">
+    <div class="upload-zone">
+      <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotos(event)">
+      <div class="upload-icon">📸</div>
+      <p class="upload-text">Glisse tes photos ou <span>clique pour choisir</span></p>
+      <div class="photos-grid" id="photosGrid"></div>
+    </div>
   </div>
 
-  <!-- Style IA (si mode IA) -->
-  <div class="form-group" id="iaStyleGroup" style="display:none">
-    <label class="form-label">Style des images</label>
-    <select class="form-input" id="iaStyle">
-      <option value="lifestyle photography, warm natural light, authentic">🌿 Lifestyle naturel</option>
-      <option value="minimalist flat lay, pastel colors, Instagram aesthetic" selected>✨ Flat lay Instagram</option>
-      <option value="professional product photography, clean white background">📦 Produit professionnel</option>
-      <option value="food photography, appetizing, restaurant lighting">🍽️ Food photography</option>
-      <option value="luxury editorial photography, cinematic lighting">💎 Luxe & élégance</option>
-      <option value="fitness photography, energetic, action shot">💪 Fitness & sport</option>
-    </select>
+  <!-- OPTIONS IMAGE IA -->
+  <div id="zoneIA" style="display:none">
+    <div class="ai-options">
+      <div class="field">
+        <label>Style des images</label>
+        <select id="aiStyle">
+          <option value="lifestyle photography, warm natural light, authentic">🌿 Lifestyle naturel</option>
+          <option value="minimalist flat lay, pastel colors, Instagram aesthetic" selected>✨ Flat lay Instagram</option>
+          <option value="professional product photography, clean white background">📦 Produit professionnel</option>
+          <option value="food photography, appetizing, restaurant lighting">🍽️ Food photography</option>
+          <option value="luxury editorial photography, cinematic lighting">💎 Luxe & élégance</option>
+          <option value="fitness photography, energetic, action shot">💪 Fitness & sport</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Description supplémentaire (optionnel)</label>
+        <input type="text" id="aiExtra" placeholder="Ex: fond bleu, ambiance cosy, avec des fleurs...">
+      </div>
+    </div>
   </div>
 
-  <!-- Formulaire -->
-  <div class="form-group">
-    <label class="form-label">Ton activité</label>
-    <input type="text" class="form-input" id="business" placeholder="Ex: restaurant italien à Toulon, coiffeur femme à Lyon..." />
+  <!-- FORM -->
+  <div class="field">
+    <label>Ton activité</label>
+    <input type="text" id="business" placeholder="Ex: restaurant italien à Toulon, coiffeur femme...">
   </div>
-
-  <div class="form-group">
-    <label class="form-label">Promo ou message du moment <span style="color:#555;font-weight:400">(optionnel)</span></label>
-    <input type="text" class="form-input" id="promo" placeholder="Ex: -20% ce weekend, nouveau menu disponible..." />
+  <div class="field">
+    <label>Promo ou message <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></label>
+    <input type="text" id="promo" placeholder="Ex: -20% ce weekend, nouveau menu...">
   </div>
-
   <div class="grid2">
-    <div class="form-group">
-      <label class="form-label">Ton de voix</label>
-      <select class="form-input" id="tone">
+    <div class="field">
+      <label>Ton de voix</label>
+      <select id="tone">
         <option value="sympathique et chaleureux" selected>😊 Sympathique</option>
         <option value="professionnel">💼 Professionnel</option>
         <option value="humoristique">😄 Humoristique</option>
@@ -152,172 +175,257 @@ select.form-input option{background:var(--card)}
         <option value="dynamique et énergique">⚡ Dynamique</option>
       </select>
     </div>
-    <div class="form-group">
-      <label class="form-label">Nombre de posts</label>
-      <select class="form-input" id="count">
+    <div class="field">
+      <label>Nombre de posts</label>
+      <select id="count">
         <option value="3">3 posts</option>
         <option value="5" selected>5 posts</option>
         <option value="7">7 posts</option>
       </select>
     </div>
   </div>
-
-  <div class="form-group">
-    <label class="form-label">Réseaux sociaux</label>
+  <div class="field">
+    <label>Réseaux sociaux</label>
     <div class="platforms">
-      <button class="plat-btn active" data-p="Instagram">Instagram</button>
-      <button class="plat-btn active" data-p="Facebook">Facebook</button>
-      <button class="plat-btn" data-p="LinkedIn">LinkedIn</button>
-      <button class="plat-btn" data-p="TikTok">TikTok</button>
-      <button class="plat-btn" data-p="Twitter/X">Twitter/X</button>
+      <div class="plat active" data-p="Instagram">Instagram</div>
+      <div class="plat active" data-p="Facebook">Facebook</div>
+      <div class="plat" data-p="LinkedIn">LinkedIn</div>
+      <div class="plat" data-p="TikTok">TikTok</div>
+      <div class="plat" data-p="Twitter/X">Twitter/X</div>
     </div>
   </div>
 
   <button class="btn-gen" id="genBtn" onclick="generate()">⚡ Générer mes posts</button>
-
-  <div class="loader" id="loader">
-    <div class="dots"><span></span><span></span><span></span></div>
-    L'IA rédige tes posts...
-  </div>
-
+  <div class="loader" id="loader"><div class="dots"><span></span><span></span><span></span></div>L'IA rédige tes posts...</div>
   <div class="err" id="err"></div>
 
   <div class="results" id="results">
-    <div class="sep"></div>
     <div class="results-title">Tes posts générés</div>
     <div id="postsContainer"></div>
   </div>
-
 </div>
+
+<!-- POPUP ESSAI ÉPUISÉ -->
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <div class="popup-icon">🚀</div>
+    <div class="popup-title">Tu as adoré PostIA !</div>
+    <div class="popup-sub">Tes 3 essais gratuits sont utilisés.<br>Continue sans limite avec un abonnement.</div>
+    <div class="popup-plans">
+      <div class="plan" onclick="goStripe('starter')">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">14€<span>/mois</span></div>
+        <div class="plan-feat">✓ 100 générations/mois<br>✓ Texte + tes photos<br>✓ Hashtags</div>
+      </div>
+      <div class="plan featured" onclick="goStripe('pro')">
+        <div class="plan-name">⭐ Pro</div>
+        <div class="plan-price">24€<span>/mois</span></div>
+        <div class="plan-feat">✓ 300 générations/mois<br>✓ Images IA incluses<br>✓ Tout Starter</div>
+      </div>
+    </div>
+    <div class="popup-trial"><strong>7 jours gratuits</strong> · Sans engagement · Annulation libre</div>
+    <button class="btn-popup" onclick="goStripe('pro')">Commencer 7 jours gratuits →</button>
+    <button class="btn-popup-sec" onclick="closePopup()">Pas maintenant</button>
+  </div>
+</div>
+
 <script>
+// ── TRIAL SYSTEM ──────────────────────────────────────────
+var MAX_TRIALS = 3;
+
+function getTrials() {
+  var t = parseInt(localStorage.getItem('postia_trials') || '0');
+  return t;
+}
+
+function useTrial() {
+  var t = getTrials() + 1;
+  localStorage.setItem('postia_trials', t);
+  updateTrialBadge();
+  return t;
+}
+
+function updateTrialBadge() {
+  var used = getTrials();
+  var left = Math.max(0, MAX_TRIALS - used);
+  document.getElementById('trialCount').textContent = left;
+  if (left === 0) {
+    document.getElementById('trialBadge').style.borderColor = '#ff6b6b';
+    document.getElementById('trialBadge').style.color = '#ff6b6b';
+    document.getElementById('trialCount').style.color = '#ff6b6b';
+  }
+}
+
+function canGenerate() {
+  return getTrials() < MAX_TRIALS;
+}
+
+function showPopup() {
+  document.getElementById('overlay').classList.add('show');
+}
+
+function closePopup() {
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function goStripe(plan) {
+  // À remplacer par les vrais liens Stripe plus tard
+  alert('Stripe sera intégré bientôt ! Plan : ' + plan);
+}
+
+// Init badge
+updateTrialBadge();
+
+// ── MODE ──────────────────────────────────────────────────
 var mode = 'sans';
 var photos = [];
 
-function setPhoto(val) {
-  mode = val === true ? 'avec' : val === 'ia' ? 'ia' : 'sans';
-  document.getElementById('btnSans').classList.toggle('active', mode==='sans');
-  document.getElementById('btnAvec').classList.toggle('active', mode==='avec');
-  document.getElementById('btnIA').classList.toggle('active', mode==='ia');
-  document.getElementById('uploadZone').classList.toggle('visible', mode==='avec');
-  document.getElementById('iaStyleGroup').style.display = mode==='ia' ? 'block' : 'none';
+function setMode(m) {
+  mode = m;
+  ['sans','photo','ia'].forEach(function(x) {
+    document.getElementById('btn' + (x==='sans'?'Sans':x==='photo'?'Photo':'IA')).classList.toggle('active', x===m);
+  });
+  document.getElementById('zonePhoto').style.display = m==='photo' ? 'block' : 'none';
+  document.getElementById('zoneIA').style.display = m==='ia' ? 'block' : 'none';
 }
 
-document.querySelectorAll('.plat-btn').forEach(function(b){
-  b.addEventListener('click',function(){ b.classList.toggle('active'); });
+// ── PLATFORMS ────────────────────────────────────────────
+document.querySelectorAll('.plat').forEach(function(b) {
+  b.addEventListener('click', function() { b.classList.toggle('active'); });
 });
 
+// ── PHOTOS ───────────────────────────────────────────────
 function handlePhotos(e) {
   var files = Array.from(e.target.files).slice(0, 10 - photos.length);
-  files.forEach(function(f){
+  files.forEach(function(f) {
     var r = new FileReader();
-    r.onload = function(ev){
+    r.onload = function(ev) {
       photos.push({ dataUrl: ev.target.result, name: f.name.replace(/\.[^.]+$/,'').replace(/[-_]/g,' ') });
       renderGrid();
     };
     r.readAsDataURL(f);
   });
-  e.target.value='';
+  e.target.value = '';
 }
 
-function removePhoto(i){ photos.splice(i,1); renderGrid(); }
+function removePhoto(i) { photos.splice(i,1); renderGrid(); }
 
-function renderGrid(){
+function renderGrid() {
   var g = document.getElementById('photosGrid');
-  g.innerHTML='';
-  photos.forEach(function(p,i){
-    var d=document.createElement('div');
-    d.className='photo-thumb';
-    d.innerHTML='<img src="'+p.dataUrl+'" /><button class="rm" onclick="removePhoto('+i+')">✕</button>';
+  g.innerHTML = '';
+  photos.forEach(function(p,i) {
+    var d = document.createElement('div');
+    d.className = 'photo-thumb';
+    d.innerHTML = '<img src="'+p.dataUrl+'"><button class="rm" onclick="removePhoto('+i+')">✕</button>';
     g.appendChild(d);
   });
 }
 
-function getPlatforms(){
-  return Array.from(document.querySelectorAll('.plat-btn.active')).map(function(b){ return b.dataset.p; });
+function getPlatforms() {
+  return Array.from(document.querySelectorAll('.plat.active')).map(function(b) { return b.dataset.p; });
 }
 
-function showErr(msg){
-  var e=document.getElementById('err');
-  e.textContent=msg; e.classList.add('show');
+function showErr(msg) {
+  var e = document.getElementById('err');
+  e.textContent = msg; e.classList.add('show');
 }
 
-async function generate(){
-  var business=document.getElementById('business').value.trim();
-  var promo=document.getElementById('promo').value.trim();
-  var tone=document.getElementById('tone').value;
-  var count=document.getElementById('count').value;
-  var platforms=getPlatforms();
+// ── GENERATE ─────────────────────────────────────────────
+async function generate() {
+  // Check trial
+  if (!canGenerate()) {
+    showPopup();
+    return;
+  }
+
+  var business = document.getElementById('business').value.trim();
+  var promo = document.getElementById('promo').value.trim();
+  var tone = document.getElementById('tone').value;
+  var count = document.getElementById('count').value;
+  var platforms = getPlatforms();
 
   document.getElementById('err').classList.remove('show');
-  if(!business){ showErr('Décris ton activité pour continuer.'); return; }
-  if(!platforms.length){ showErr('Sélectionne au moins un réseau social.'); return; }
-  if(mode==='avec' && photos.length===0){ showErr('Ajoute au moins une photo.'); return; }
+  if (!business) { showErr('Décris ton activité pour continuer.'); return; }
+  if (!platforms.length) { showErr('Sélectionne au moins un réseau social.'); return; }
+  if (mode==='photo' && photos.length===0) { showErr('Ajoute au moins une photo.'); return; }
 
-  document.getElementById('genBtn').disabled=true;
+  document.getElementById('genBtn').disabled = true;
   document.getElementById('loader').classList.add('show');
   document.getElementById('results').classList.remove('show');
 
-  var photoLine = photos.length > 0
-    ? '- Photos uploadées : '+photos.map(function(p){ return '"'+p.name+'"'; }).join(', ')+'.\n' : '';
+  var photoLine = photos.length > 0 ? '- Photos uploadées : '+photos.map(function(p){ return '"'+p.name+'"'; }).join(', ')+'.\n' : '';
   var promoLine = promo ? '- Promo : '+promo+'\n' : '';
-  var iaLine = mode==='ia' ? '- Pour chaque post ajoute "image_prompt": prompt anglais 15 mots max décrivant une image. Style: '+document.getElementById('iaStyle').value+'.\n' : '';
+  var aiImgLine = mode==='ia' ? '- Pour chaque post ajoute "image_prompt": prompt ANGLAIS max 15 mots décrivant une image. Style: '+document.getElementById('aiStyle').value+(document.getElementById('aiExtra').value ? ', '+document.getElementById('aiExtra').value : '')+'.\n' : '';
+
   var extraFields = '';
-  if(mode==='ia') extraFields+=', "image_prompt": "..."';
-  if(photos.length>0) extraFields+=', "photo_index": 0';
+  if (mode==='ia') extraFields += ', "image_prompt": "..."';
+  if (photos.length > 0) extraFields += ', "photo_index": 0';
 
-  var prompt='Tu es expert marketing digital.\n\nGénère exactement '+count+' posts pour:\n- Business: '+business+'\n- Plateformes: '+platforms.join(', ')+'\n'+promoLine+photoLine+iaLine+'- Ton: '+tone+'\n\nVarie les angles, adapte à chaque plateforme, emojis + appel à l\'action.\n\nJSON uniquement sans backticks:\n{"posts":[{"platform":"nom","content":"texte"'+extraFields+'},…]}';
+  var prompt = 'Tu es expert marketing digital.\n\nGénère exactement '+count+' posts pour:\n- Business: '+business+'\n- Plateformes: '+platforms.join(', ')+'\n'+promoLine+photoLine+aiImgLine+'- Ton: '+tone+'\n\nVarie les angles, adapte à chaque plateforme, emojis + appel à l\'action.\n\nJSON uniquement sans backticks:\n{"posts":[{"platform":"nom","content":"texte"'+extraFields+'},…]}';
 
-  try{
-    var res=await fetch('/api/generate',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:[{role:'user',content:prompt}]})
+  try {
+    var res = await fetch('/api/generate', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ messages: [{ role:'user', content:prompt }] })
     });
-    if(!res.ok){ var e2=await res.json(); throw new Error(e2.error||'Erreur '+res.status); }
-    var data=await res.json();
-    var text=(data.content||[]).map(function(b){ return b.text||''; }).join('');
-    var clean=text.replace(/```json|```/g,'').trim();
-    var parsed=JSON.parse(clean);
+    if (!res.ok) { var e2 = await res.json(); throw new Error(e2.error||'Erreur'); }
+    var data = await res.json();
+    var text = (data.content||[]).map(function(b){ return b.text||''; }).join('');
+    var clean = text.replace(/```json|```/g,'').trim();
+    var parsed = JSON.parse(clean);
+
+    // Use trial
+    var trialsUsed = getTrials() + 1;
+    localStorage.setItem('postia_trials', trialsUsed);
+    updateTrialBadge();
     renderPosts(parsed.posts||[]);
-  }catch(e){
+
+    // Show popup after last trial
+    if (trialsUsed >= MAX_TRIALS) {
+      setTimeout(function() { showPopup(); }, 2000);
+    }
+
+  } catch(e) {
     showErr('Erreur: '+(e.message||'Réessaie.'));
-  }finally{
-    document.getElementById('genBtn').disabled=false;
+  } finally {
+    document.getElementById('genBtn').disabled = false;
     document.getElementById('loader').classList.remove('show');
   }
 }
 
-function renderPosts(posts){
-  var c=document.getElementById('postsContainer');
-  c.innerHTML='';
-  if(!posts.length){ showErr('Aucun post généré.'); return; }
+function renderPosts(posts) {
+  var c = document.getElementById('postsContainer');
+  c.innerHTML = '';
+  if (!posts.length) { showErr('Aucun post généré.'); return; }
 
-  posts.forEach(function(post,i){
-    var card=document.createElement('div');
-    card.className='post-card';
-    card.style.animationDelay=(i*.07)+'s';
+  posts.forEach(function(post, i) {
+    var card = document.createElement('div');
+    card.className = 'post-card';
+    card.style.animationDelay = (i*.07)+'s';
 
-    var photoHtml='';
-    var dlBtn='';
+    var photoHtml = '';
+    var dlBtn = '';
 
-    if(photos.length>0){
-      var idx=(typeof post.photo_index==='number'&&post.photo_index>=0&&post.photo_index<photos.length)?post.photo_index:(i%photos.length);
-      photoHtml='<img class="post-img" src="'+photos[idx].dataUrl+'" />';
-      dlBtn='<button class="btn-sm" onclick="dlPhoto('+idx+','+i+')">⬇ Photo</button>';
-    } else if(mode==='ia'&&post.image_prompt){
-      var style=document.getElementById('iaStyle').value;
-      var fullPrompt=post.image_prompt+', '+style;
-      photoHtml='<div class="post-img" id="aiwrap-'+i+'" style="display:flex;align-items:center;justify-content:center;background:#111;flex-direction:column;gap:8px"><div style="font-size:28px;animation:bounce .7s infinite">🎨</div><div style="font-size:12px;color:#555">Génération...</div></div>';
-      dlBtn='<button class="btn-sm" id="aidl-'+i+'" style="display:none" onclick="dlAi('+i+')">⬇ Image</button>';
-      setTimeout(function(ci,p){ genAiImg(ci,p); }.bind(null,i,fullPrompt), i*800);
+    if (photos.length > 0) {
+      var idx = (typeof post.photo_index==='number' && post.photo_index>=0 && post.photo_index<photos.length) ? post.photo_index : (i%photos.length);
+      photoHtml = '<img class="post-img" src="'+photos[idx].dataUrl+'">';
+      dlBtn = '<button class="btn-s" onclick="dlPhoto('+idx+','+i+')">⬇</button>';
+    } else if (mode==='ia' && post.image_prompt) {
+      var style = document.getElementById('aiStyle').value;
+      var extra = document.getElementById('aiExtra').value;
+      var fullPrompt = post.image_prompt+', '+style+(extra?', '+extra:'');
+      photoHtml = '<div class="post-img-loading" id="aiload-'+i+'"><div style="font-size:28px;animation:bounce .7s infinite">🎨</div><div>Génération Nano Banana...</div></div>';
+      dlBtn = '<button class="btn-s" id="aidl-'+i+'" style="display:none" onclick="dlAI('+i+')">⬇ Image</button>';
+      setTimeout(function(ci,p){ genAIImage(ci,p); }.bind(null,i,fullPrompt), i*800);
     }
 
-    card.innerHTML=photoHtml+
-      '<div class="post-body">'+
-        '<div class="post-top">'+
-          '<span class="post-platform">'+escH(post.platform)+'</span>'+
-          '<div class="post-btns">'+dlBtn+'<button class="btn-sm" onclick="copy(this,\'pt-'+i+'\')">Copier</button></div>'+
-        '</div>'+
-        '<div class="post-text" id="pt-'+i+'">'+escH(post.content)+'</div>'+
+    card.innerHTML = photoHtml +
+      '<div class="post-body">' +
+        '<div class="post-top">' +
+          '<span class="post-plat">'+escH(post.platform)+'</span>' +
+          '<div class="post-btns">'+dlBtn+'<button class="btn-s" onclick="copyPost(this,\'pt-'+i+'\')">Copier</button></div>' +
+        '</div>' +
+        '<div class="post-text" id="pt-'+i+'">'+escH(post.content)+'</div>' +
       '</div>';
     c.appendChild(card);
   });
@@ -325,44 +433,50 @@ function renderPosts(posts){
   document.getElementById('results').classList.add('show');
 }
 
-async function genAiImg(i,prompt){
-  var wrap=document.getElementById('aiwrap-'+i);
-  if(!wrap)return;
-  try{
-    var res=await fetch('/api/image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt})});
-    var data=await res.json();
-    if(!data.image)throw new Error(data.error||'Erreur');
-    wrap.outerHTML='<img class="post-img" id="aiimg-'+i+'" src="'+data.image+'" />';
-    var dl=document.getElementById('aidl-'+i);
-    if(dl){dl.style.display='';dl.dataset.src=data.image;}
-  }catch(e){
-    if(wrap)wrap.innerHTML='<div style="color:#ff6b6b;font-size:13px;padding:20px;text-align:center">❌ '+(e.message||'Erreur')+'<br><button onclick="genAiImg('+i+',\''+prompt+'\')" style="margin-top:8px;background:transparent;border:1px solid #ff6b6b;color:#ff6b6b;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px">🔄 Réessayer</button></div>';
+async function genAIImage(i, prompt) {
+  var wrap = document.getElementById('aiload-'+i);
+  if (!wrap) return;
+  try {
+    var res = await fetch('/api/image', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ prompt: prompt })
+    });
+    var data = await res.json();
+    if (!data.image) throw new Error(data.error||'Erreur');
+    var img = document.createElement('img');
+    img.className = 'post-img';
+    img.src = data.image;
+    wrap.replaceWith(img);
+    var dl = document.getElementById('aidl-'+i);
+    if (dl) { dl.style.display=''; dl.dataset.src=data.image; }
+  } catch(e) {
+    if (wrap) wrap.innerHTML = '<div style="color:#ff6b6b;font-size:13px;padding:20px;text-align:center">❌ '+escH(e.message||'Erreur')+'<br><button onclick="genAIImage('+i+',\''+prompt.replace(/'/g,"\\'")+'\')" style="margin-top:8px;background:transparent;border:1px solid #ff6b6b;color:#ff6b6b;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px">🔄 Réessayer</button></div>';
   }
 }
 
-function dlAi(i){
-  var btn=document.getElementById('aidl-'+i);
-  if(!btn||!btn.dataset.src)return;
-  var a=document.createElement('a');
-  a.href=btn.dataset.src;a.download='image-ia-'+(i+1)+'.png';a.click();
+function dlAI(i) {
+  var btn = document.getElementById('aidl-'+i);
+  if (!btn||!btn.dataset.src) return;
+  var a = document.createElement('a');
+  a.href = btn.dataset.src; a.download='image-ia-'+(i+1)+'.png'; a.click();
 }
 
-function dlPhoto(photoIdx,postIdx){
-  if(!photos[photoIdx])return;
-  var a=document.createElement('a');
-  a.href=photos[photoIdx].dataUrl;a.download='photo-post-'+(postIdx+1)+'.jpg';a.click();
+function dlPhoto(idx, postIdx) {
+  if (!photos[idx]) return;
+  var a = document.createElement('a');
+  a.href = photos[idx].dataUrl; a.download='photo-post-'+(postIdx+1)+'.jpg'; a.click();
 }
 
-function copy(btn,id){
-  var t=document.getElementById(id);
-  if(!t)return;
-  navigator.clipboard.writeText(t.innerText).then(function(){
-    btn.textContent='✓ Copié!';btn.classList.add('ok');
-    setTimeout(function(){btn.textContent='Copier';btn.classList.remove('ok');},2000);
+function copyPost(btn, id) {
+  var t = document.getElementById(id);
+  if (!t) return;
+  navigator.clipboard.writeText(t.innerText).then(function() {
+    btn.textContent='✓ Copié!'; btn.classList.add('ok');
+    setTimeout(function(){ btn.textContent='Copier'; btn.classList.remove('ok'); }, 2000);
   });
 }
 
-function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
 </html>
