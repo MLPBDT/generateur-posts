@@ -119,9 +119,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
   <!-- MODE -->
   <div class="mode-toggle">
-    <div class="mode-btn active" id="btnSans" onclick="setMode('sans')">✍️ Sans photo</div>
-    <div class="mode-btn" id="btnPhoto" onclick="setMode('photo')">📸 Mes photos</div>
-    <div class="mode-btn" id="btnIA" onclick="setMode('ia')">🤖 Image IA</div>
+    <div class="mode-btn active" id="btnSans" onclick="setMode('sans')">✍️ Texte seul</div>
+    <div class="mode-btn" id="btnPhoto" onclick="setMode('photo')">📸 Avec mes photos</div>
   </div>
 
   <!-- UPLOAD PHOTOS -->
@@ -134,26 +133,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
   </div>
 
-  <!-- OPTIONS IMAGE IA -->
-  <div id="zoneIA" style="display:none">
-    <div class="ai-options">
-      <div class="field">
-        <label>Style des images</label>
-        <select id="aiStyle">
-          <option value="lifestyle photography, warm natural light, authentic">🌿 Lifestyle naturel</option>
-          <option value="minimalist flat lay, pastel colors, Instagram aesthetic" selected>✨ Flat lay Instagram</option>
-          <option value="professional product photography, clean white background">📦 Produit professionnel</option>
-          <option value="food photography, appetizing, restaurant lighting">🍽️ Food photography</option>
-          <option value="luxury editorial photography, cinematic lighting">💎 Luxe & élégance</option>
-          <option value="fitness photography, energetic, action shot">💪 Fitness & sport</option>
-        </select>
-      </div>
-      <div class="field" style="margin-bottom:0">
-        <label>Description supplémentaire (optionnel)</label>
-        <input type="text" id="aiExtra" placeholder="Ex: fond bleu, ambiance cosy, avec des fleurs...">
-      </div>
-    </div>
-  </div>
+
 
   <!-- FORM -->
   <div class="field">
@@ -282,11 +262,9 @@ var photos = [];
 
 function setMode(m) {
   mode = m;
-  ['sans','photo','ia'].forEach(function(x) {
-    document.getElementById('btn' + (x==='sans'?'Sans':x==='photo'?'Photo':'IA')).classList.toggle('active', x===m);
-  });
+  document.getElementById('btnSans').classList.toggle('active', m==='sans');
+  document.getElementById('btnPhoto').classList.toggle('active', m==='photo');
   document.getElementById('zonePhoto').style.display = m==='photo' ? 'block' : 'none';
-  document.getElementById('zoneIA').style.display = m==='ia' ? 'block' : 'none';
 }
 
 // ── PLATFORMS ────────────────────────────────────────────
@@ -353,15 +331,26 @@ async function generate() {
   document.getElementById('loader').classList.add('show');
   document.getElementById('results').classList.remove('show');
 
-  var photoLine = photos.length > 0 ? '- Photos uploadées : '+photos.map(function(p){ return '"'+p.name+'"'; }).join(', ')+'.\n' : '';
-  var promoLine = promo ? '- Promo : '+promo+'\n' : '';
-  var aiImgLine = mode==='ia' ? '- Pour chaque post ajoute "image_prompt": prompt ANGLAIS max 15 mots décrivant une image. Style: '+document.getElementById('aiStyle').value+(document.getElementById('aiExtra').value ? ', '+document.getElementById('aiExtra').value : '')+'.\n' : '';
+  var photoLine = photos.length > 0
+    ? '- Le client a uploadé '+photos.length+' photo(s) : '+photos.map(function(p){ return '"'+p.name+'"'; }).join(', ')+'. Génère des posts EN LIEN avec ces visuels.\n'
+    : '';
+  var promoLine = promo ? '- Promotion/actualité à mettre en avant : '+promo+'\n' : '';
+  var extraFields = photos.length > 0 ? ', "photo_index": 0' : '';
 
-  var extraFields = '';
-  if (mode==='ia') extraFields += ', "image_prompt": "..."';
-  if (photos.length > 0) extraFields += ', "photo_index": 0';
-
-  var prompt = 'Tu es expert marketing digital.\n\nGénère exactement '+count+' posts pour:\n- Business: '+business+'\n- Plateformes: '+platforms.join(', ')+'\n'+promoLine+photoLine+aiImgLine+'- Ton: '+tone+'\n\nVarie les angles, adapte à chaque plateforme, emojis + appel à l\'action.\n\nJSON uniquement sans backticks:\n{"posts":[{"platform":"nom","content":"texte"'+extraFields+'},…]}';
+  var prompt = 'Génère exactement '+count+' posts réseaux sociaux DIFFÉRENTS et PERCUTANTS pour :\n'
+    + '- Business : '+business+'\n'
+    + '- Plateformes ciblées : '+platforms.join(', ')+'\n'
+    + promoLine
+    + photoLine
+    + '- Ton de voix souhaité : '+tone+'\n'
+    + '- Nombre de posts demandés : '+count+'\n\n'
+    + 'IMPORTANT : Chaque post doit avoir un angle DIFFÉRENT (storytelling, promo, conseil, coulisses, témoignage client, question engagement).\n'
+    + 'Adapte précisément le contenu au type de business mentionné.\n'
+    + 'Les posts doivent sembler écrits par un humain, pas par une IA.\n\n'
+    + 'Réponds UNIQUEMENT en JSON valide sans markdown :\n'
+    + '{"posts":[{"platform":"nom","content":"texte complet du post avec emojis et hashtags"'
+    + extraFields
+    + '},…]}';
 
   try {
     var res = await fetch('/api/generate', {
@@ -410,13 +399,6 @@ function renderPosts(posts) {
       var idx = (typeof post.photo_index==='number' && post.photo_index>=0 && post.photo_index<photos.length) ? post.photo_index : (i%photos.length);
       photoHtml = '<img class="post-img" src="'+photos[idx].dataUrl+'">';
       dlBtn = '<button class="btn-s" onclick="dlPhoto('+idx+','+i+')">⬇</button>';
-    } else if (mode==='ia' && post.image_prompt) {
-      var style = document.getElementById('aiStyle').value;
-      var extra = document.getElementById('aiExtra').value;
-      var fullPrompt = post.image_prompt+', '+style+(extra?', '+extra:'');
-      photoHtml = '<div class="post-img-loading" id="aiload-'+i+'"><div style="font-size:28px;animation:bounce .7s infinite">🎨</div><div>Génération Nano Banana...</div></div>';
-      dlBtn = '<button class="btn-s" id="aidl-'+i+'" style="display:none" onclick="dlAI('+i+')">⬇ Image</button>';
-      setTimeout(function(ci,p){ genAIImage(ci,p); }.bind(null,i,fullPrompt), i*800);
     }
 
     card.innerHTML = photoHtml +
