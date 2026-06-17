@@ -11,89 +11,52 @@ export default async function handler(req, res) {
 Règles ABSOLUES pour chaque post :
 
 INSTAGRAM :
-- Commence par une accroche émotionnelle ou une question percutante
+- Commence par une accroche émotionnelle ou une question
 - 150-220 mots maximum
 - 8-15 hashtags pertinents à la fin (mélange populaires + niche + local)
-- 2-4 emojis bien placés et pertinents
+- 2-4 emojis bien placés
 - CTA clair (réserver, commander, venir nous voir, lien en bio)
 - Ton authentique et chaleureux
 
 FACEBOOK :
-- Commence par une histoire courte ou une anecdote locale
+- Commence par une histoire courte ou une anecdote
 - 100-180 mots
 - 2-3 hashtags seulement
 - Favorise le partage et les commentaires
-- CTA avec invitation à réagir ou partager
-- Ton convivial et ancré dans le local
+- CTA avec lien ou numéro de téléphone
+- Ton convivial et local
 
 LINKEDIN :
-- Commence par un chiffre, une stat ou une observation pro
+- Commence par un chiffre ou une stat
 - 150-250 mots
-- Partage une expertise ou un apprentissage métier
+- Partage une expertise ou un apprentissage
 - 3-5 hashtags professionnels
-- CTA orienté réseau et expertise
-- Ton professionnel mais humain et accessible
+- CTA orienté réseau professionnel
+- Ton professionnel mais humain
 
 TIKTOK :
-- Première ligne = hook ultra fort qui arrête le scroll
-- 80-120 mots maximum
+- Commence par un hook ultra fort (première ligne = tout)
+- 80-120 mots
 - Style parlé, dynamique, phrases courtes
 - 5-8 hashtags tendance
-- CTA vers le profil ou le lien en bio
-- Ton jeune, énergique, authentique
+- CTA vers le profil ou le site
+- Ton jeune et énergique
 
 TWITTER/X :
 - Maximum 250 caractères
-- Une seule idée forte et mémorable
+- Une seule idée forte
 - 1-2 hashtags maximum
-- Ton direct, percutant ou informatif
+- Provocateur ou informatif
+- CTA optionnel
 
 RÈGLES GÉNÉRALES :
-- Adapte TOUJOURS au business spécifique mentionné
-- Utilise le nom du lieu/ville si mentionné
+- Adapte TOUJOURS le contenu au business spécifique
+- Utilise le nom du lieu si mentionné
 - Intègre la promo naturellement sans être trop commercial
 - Varie les angles : émotion, info, humour, coulisses, témoignage
-- Emojis pertinents et bien dosés, pas décoratifs
+- Les emojis doivent être pertinents pas décoratifs
 - JAMAIS de formules génériques comme "Nous sommes ravis de vous annoncer"
-- Écris comme un humain passionné par son métier, pas comme un robot
-- Les posts doivent donner envie de liker, commenter et partager
-- Chaque post doit être VRAIMENT différent des autres : pas deux fois la même structure, pas deux fois la même accroche`;
-
-    const angles = [
-      "storytelling émotionnel — raconte une histoire vraie ou imaginée liée au business",
-      "offre directe et percutante — mets en avant la valeur et l'urgence",
-      "coulisses du métier — montre ce que le client ne voit pas d'habitude",
-      "question d'engagement — pose une question qui donne envie de commenter",
-      "témoignage ou avis client — écris comme si un client satisfait témoignait",
-      "conseil ou astuce utile — donne une info de valeur liée au secteur",
-      "humour ou anecdote légère — ton qui fait sourire"
-    ];
-
-    const formats = [
-      "texte fluide et naturel",
-      "liste courte avec emojis (3-4 points max)",
-      "mini histoire en 3 temps (situation → problème → solution)",
-      "question directe suivie de la réponse",
-      "citation inspirante ou phrase forte en ouverture"
-    ];
-
-    const enhancedMessages = messages.map((msg, idx) => {
-      if (idx === messages.length - 1 && msg.role === 'user') {
-        const userContent = msg.content;
-        const countMatch = userContent.match(/Nombre de posts demand[ée]s? ?: ?(\d+)/);
-        const count = countMatch ? parseInt(countMatch[1]) : 5;
-
-        let angleInstructions = '\n\nPour garantir une vraie variété, utilise CES ANGLES PRÉCIS, un par post, dans cet ordre :\n';
-        for (let i = 0; i < count; i++) {
-          const angle = angles[i % angles.length];
-          const format = formats[i % formats.length];
-          angleInstructions += `Post ${i + 1} : Angle "${angle}" — Format "${format}"\n`;
-        }
-
-        return { ...msg, content: userContent + angleInstructions };
-      }
-      return msg;
-    });
+- Écris comme un humain, pas comme un robot`;
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -103,11 +66,11 @@ RÈGLES GÉNÉRALES :
       },
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
-        max_tokens: 2500,
-        temperature: 0.9,
+        max_tokens: 2000,
+        temperature: 0.85,
         messages: [
           { role: "system", content: systemPrompt },
-          ...enhancedMessages
+          ...messages
         ]
       })
     });
