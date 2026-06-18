@@ -130,6 +130,12 @@ select.form-input option{background:var(--card)}
     </select>
   </div>
 
+  <!-- Description libre de l'image IA -->
+  <div class="form-group" id="iaDescGroup" style="display:none">
+    <label class="form-label">Décris l'image que tu veux <span style="color:#555;font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></label>
+    <input type="text" class="form-input" id="iaDesc" placeholder="Ex: fond bleu pastel, avec des fleurs, ambiance cosy, vue de dessus...">
+  </div>
+
   <!-- Formulaire -->
   <div class="form-group">
     <label class="form-label">Ton activité</label>
@@ -200,6 +206,7 @@ function setPhoto(val) {
   document.getElementById('btnIA').classList.toggle('active', mode==='ia');
   document.getElementById('uploadZone').classList.toggle('visible', mode==='avec');
   document.getElementById('iaStyleGroup').style.display = mode==='ia' ? 'block' : 'none';
+  document.getElementById('iaDescGroup').style.display = mode==='ia' ? 'block' : 'none';
 }
 
 document.querySelectorAll('.plat-btn').forEach(function(b){
@@ -260,7 +267,9 @@ async function generate(){
   var photoLine = photos.length > 0
     ? '- Photos uploadées : '+photos.map(function(p){ return '"'+p.name+'"'; }).join(', ')+'.\n' : '';
   var promoLine = promo ? '- Promo : '+promo+'\n' : '';
-  var iaLine = mode==='ia' ? '- Pour chaque post ajoute "image_prompt": prompt anglais 15 mots max décrivant une image. Style: '+document.getElementById('iaStyle').value+'.\n' : '';
+  var iaDescVal = mode==='ia' ? document.getElementById('iaDesc').value.trim() : '';
+  var iaDescLine = iaDescVal ? ' L\'image doit absolument inclure : '+iaDescVal+'.' : '';
+  var iaLine = mode==='ia' ? '- Pour chaque post ajoute "image_prompt": prompt anglais 15 mots max décrivant une image. Style: '+document.getElementById('iaStyle').value+'.'+iaDescLine+'\n' : '';
   var extraFields = '';
   if(mode==='ia') extraFields+=', "image_prompt": "..."';
   if(photos.length>0) extraFields+=', "photo_index": 0';
@@ -305,7 +314,8 @@ function renderPosts(posts){
       dlBtn='<button class="btn-sm" onclick="dlPhoto('+idx+','+i+')">⬇ Photo</button>';
     } else if(mode==='ia'&&post.image_prompt){
       var style=document.getElementById('iaStyle').value;
-      var fullPrompt=post.image_prompt+', '+style;
+      var descExtra=document.getElementById('iaDesc').value.trim();
+      var fullPrompt=post.image_prompt+', '+style+(descExtra?', '+descExtra:'');
       photoHtml='<div class="post-img" id="aiwrap-'+i+'" style="display:flex;align-items:center;justify-content:center;background:#111;flex-direction:column;gap:8px"><div style="font-size:28px;animation:bounce .7s infinite">🎨</div><div style="font-size:12px;color:#555">Génération...</div></div>';
       dlBtn='<button class="btn-sm" id="aidl-'+i+'" style="display:none" onclick="dlAi('+i+')">⬇ Image</button>';
       setTimeout(function(ci,p){ genAiImg(ci,p); }.bind(null,i,fullPrompt), i*800);
