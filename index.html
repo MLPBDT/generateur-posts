@@ -49,6 +49,21 @@ input,select,textarea{font-size:16px !important} /* empêche le zoom auto iOS au
 
 /* Form */
 .form-group{margin-bottom:16px}
+
+/* Fiche entreprise */
+.biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;overflow:hidden}
+.biz-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.biz-header:active{background:rgba(255,255,255,.03)}
+.biz-header-left{display:flex;align-items:center;gap:10px}
+.biz-title{font-size:14px;font-weight:600;color:var(--text)}
+.biz-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.biz-chevron{color:var(--muted);font-size:14px;transition:transform .2s}
+.biz-chevron.open{transform:rotate(180deg)}
+.biz-body{padding:0 16px 16px}
+.logo-upload{border:1.5px dashed var(--border);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .15s}
+.logo-upload:active{border-color:var(--accent)}
+.logo-upload img{width:48px;height:48px;border-radius:8px;object-fit:cover;margin:0 auto 6px;display:block}
+.hint{font-size:11px;color:#a89a3a;background:rgba(200,241,53,.08);border:1px solid rgba(200,241,53,.2);border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.5}
 .form-label{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:8px;display:block}
 .form-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;padding:14px 16px;outline:none;transition:border-color .2s}
 .form-input:focus{border-color:var(--accent)}
@@ -150,10 +165,58 @@ select.form-input option{background:var(--card)}
     <input type="text" class="form-input" id="iaDesc" placeholder="Ex: fond bleu pastel, avec des fleurs, ambiance cosy, vue de dessus...">
   </div>
 
+  <!-- Fiche entreprise -->
+  <div class="biz-card" id="bizCard">
+    <div class="biz-header" onclick="toggleBiz()">
+      <div class="biz-header-left">
+        <span style="font-size:18px">🏢</span>
+        <div>
+          <div class="biz-title">Ma fiche entreprise</div>
+          <div class="biz-sub" id="bizSub">À remplir une fois — utilisé sur tous tes posts</div>
+        </div>
+      </div>
+      <span class="biz-chevron" id="bizChevron">▾</span>
+    </div>
+    <div class="biz-body" id="bizBody" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Nom de l'entreprise</label>
+        <input type="text" class="form-input" id="bizName" placeholder="Ex: La Fournée Dorée">
+      </div>
+      <div class="grid2">
+        <div class="form-group">
+          <label class="form-label">Téléphone <span style="color:#555;font-weight:400">(optionnel)</span></label>
+          <input type="tel" class="form-input" id="bizPhone" placeholder="06 12 34 56 78">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ville <span style="color:#555;font-weight:400">(optionnel)</span></label>
+          <input type="text" class="form-input" id="bizCity" placeholder="Toulon">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Adresse <span style="color:#555;font-weight:400">(optionnel)</span></label>
+        <input type="text" class="form-input" id="bizAddress" placeholder="12 rue de la Paix, 83000 Toulon">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Site web / Instagram <span style="color:#555;font-weight:400">(optionnel)</span></label>
+        <input type="text" class="form-input" id="bizWeb" placeholder="@lafourneedoree ou www.monsite.fr">
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Logo <span style="color:#555;font-weight:400">(optionnel — pour les images IA)</span></label>
+        <div class="logo-upload" id="logoUpload" onclick="document.getElementById('logoInput').click()">
+          <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="handleLogo(event)">
+          <div id="logoPreviewWrap">
+            <span style="font-size:13px;color:var(--muted)">📤 Ajouter ton logo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Formulaire -->
   <div class="form-group">
     <label class="form-label">Ton activité</label>
-    <input type="text" class="form-input" id="business" placeholder="Ex: restaurant italien à Toulon, coiffeur femme à Lyon..." />
+    <input type="text" class="form-input" id="business" placeholder="Sois précis : type d'activité, spécialité, ambiance... plus tu en dis, meilleur sera le résultat" />
+    <div class="hint" id="businessHint" style="display:none">💡 Essaie d'en dire un peu plus : ex. "boulangerie artisanale familiale, spécialiste viennoiseries au beurre, ambiance conviviale" plutôt que juste "boulangerie"</div>
   </div>
 
   <div class="form-group">
@@ -212,6 +275,104 @@ select.form-input option{background:var(--card)}
 <script>
 var mode = 'sans';
 var photos = [];
+var bizLogo = null;
+
+// ── Fiche entreprise : sauvegarde / chargement ─────────────
+var BIZ_FIELDS = ['bizName','bizPhone','bizCity','bizAddress','bizWeb'];
+
+function loadBiz() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('postia_biz') || '{}');
+    BIZ_FIELDS.forEach(function(id){
+      if (saved[id] && document.getElementById(id)) document.getElementById(id).value = saved[id];
+    });
+    if (saved.logo) {
+      bizLogo = saved.logo;
+      renderLogoPreview();
+    }
+    updateBizSub();
+  } catch(e) {}
+}
+
+function saveBiz() {
+  var data = {};
+  BIZ_FIELDS.forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) data[id] = el.value.trim();
+  });
+  if (bizLogo) data.logo = bizLogo;
+  localStorage.setItem('postia_biz', JSON.stringify(data));
+  updateBizSub();
+}
+
+function updateBizSub() {
+  var name = document.getElementById('bizName').value.trim();
+  document.getElementById('bizSub').textContent = name
+    ? '✓ ' + name + ' — clique pour modifier'
+    : 'À remplir une fois — utilisé sur tous tes posts';
+}
+
+BIZ_FIELDS.forEach(function(id){
+  document.addEventListener('DOMContentLoaded', function(){
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', saveBiz);
+  });
+});
+
+function toggleBiz() {
+  var body = document.getElementById('bizBody');
+  var chevron = document.getElementById('bizChevron');
+  var isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  chevron.classList.toggle('open', !isOpen);
+}
+
+function handleLogo(e) {
+  var f = e.target.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function(ev) {
+    bizLogo = ev.target.result;
+    renderLogoPreview();
+    saveBiz();
+  };
+  r.readAsDataURL(f);
+}
+
+function renderLogoPreview() {
+  var wrap = document.getElementById('logoPreviewWrap');
+  if (bizLogo) {
+    wrap.innerHTML = '<img src="'+bizLogo+'"><span style="font-size:12px;color:var(--accent)">✓ Logo ajouté — clique pour changer</span>';
+  } else {
+    wrap.innerHTML = '<span style="font-size:13px;color:var(--muted)">📤 Ajouter ton logo</span>';
+  }
+}
+
+function getBizData() {
+  var data = { logo: bizLogo };
+  BIZ_FIELDS.forEach(function(id){
+    var el = document.getElementById(id);
+    data[id] = el ? el.value.trim() : '';
+  });
+  return data;
+}
+
+// ── Hint si la description d'activité est trop courte ──────
+document.addEventListener('DOMContentLoaded', function(){
+  var bizInput = document.getElementById('business');
+  if (bizInput) {
+    bizInput.addEventListener('blur', function(){
+      var wordCount = bizInput.value.trim().split(/\s+/).filter(Boolean).length;
+      document.getElementById('businessHint').style.display = (wordCount > 0 && wordCount < 4) ? 'block' : 'none';
+    });
+    bizInput.addEventListener('input', function(){
+      if (bizInput.value.trim().split(/\s+/).filter(Boolean).length >= 4) {
+        document.getElementById('businessHint').style.display = 'none';
+      }
+    });
+  }
+  loadBiz();
+});
 
 function setPhoto(val) {
   mode = val === true ? 'avec' : val === 'ia' ? 'ia' : 'sans';
@@ -288,7 +449,35 @@ async function generate(){
   if(mode==='ia') extraFields+=', "image_prompt": "..."';
   if(photos.length>0) extraFields+=', "photo_index": 0';
 
-  var prompt='Tu es expert marketing digital.\n\nGénère exactement '+count+' posts pour:\n- Business: '+business+'\n- Plateformes: '+platforms.join(', ')+'\n'+promoLine+photoLine+iaLine+'- Ton: '+tone+'\n\nVarie les angles, adapte à chaque plateforme, emojis + appel à l\'action.\n\nJSON uniquement sans backticks:\n{"posts":[{"platform":"nom","content":"texte"'+extraFields+'},…]}';
+  // Fiche entreprise : on ne donne QUE les infos réellement fournies, jamais d'invention
+  var biz = getBizData();
+  var bizLine = '';
+  if (biz.bizName) bizLine += '- Nom de l\'entreprise (à utiliser tel quel, ne pas en inventer un autre) : '+biz.bizName+'\n';
+  if (biz.bizPhone) bizLine += '- Téléphone réel à mentionner si pertinent : '+biz.bizPhone+'\n';
+  if (biz.bizCity) bizLine += '- Ville : '+biz.bizCity+'\n';
+  if (biz.bizAddress) bizLine += '- Adresse réelle à mentionner si pertinent : '+biz.bizAddress+'\n';
+  if (biz.bizWeb) bizLine += '- Site/Instagram à mentionner en CTA : '+biz.bizWeb+'\n';
+  var bizWarning = (biz.bizPhone || biz.bizAddress)
+    ? 'IMPORTANT : utilise UNIQUEMENT les coordonnées exactes données ci-dessus. N\'invente JAMAIS de numéro de téléphone, adresse ou nom différent.\n'
+    : 'Aucune coordonnée précise fournie : ne mentionne ni numéro de téléphone ni adresse inventée. Reste générique sur ces points (ex: "lien en bio", "contactez-nous").\n';
+
+  var prompt='Tu es un expert en marketing digital spécialisé dans les réseaux sociaux pour commerçants locaux.\n\n'
+    + 'Génère exactement '+count+' posts DIFFÉRENTS et PERCUTANTS pour :\n'
+    + '- Activité détaillée : '+business+'\n'
+    + bizLine
+    + '- Plateformes : '+platforms.join(', ')+'\n'
+    + promoLine + photoLine + iaLine
+    + '- Ton de voix : '+tone+'\n\n'
+    + bizWarning
+    + 'RÈGLES OBLIGATOIRES :\n'
+    + '1. EMOJIS : chaque post doit contenir entre 3 et 6 emojis pertinents et bien répartis dans le texte (pas seulement à la fin).\n'
+    + '2. HASHTAGS : termine chaque post par 4 à 8 hashtags pertinents liés à l\'activité et à la ville si connue.\n'
+    + '3. VARIÉTÉ : donne à chaque post un angle différent (storytelling, promo directe, coulisses, question d\'engagement, témoignage, astuce).\n'
+    + '4. APPEL À L\'ACTION : termine par un CTA clair adapté à la plateforme (réserver, venir, lien en bio, appeler...).\n'
+    + '5. AUTHENTICITÉ : écris comme un humain passionné par son métier, jamais de formule robotique comme "Nous sommes ravis de vous annoncer".\n'
+    + '6. Adapte la longueur et le style au format propre de chaque plateforme (Instagram chaleureux, LinkedIn pro, TikTok punchy, etc).\n\n'
+    + 'Réponds UNIQUEMENT en JSON valide sans markdown :\n'
+    + '{"posts":[{"platform":"nom","content":"texte complet avec emojis et hashtags"'+extraFields+'},…]}';
 
   try{
     var res=await fetch('/api/generate',{
@@ -356,12 +545,65 @@ async function genAiImg(i,prompt){
     var res=await fetch('/api/image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt})});
     var data=await res.json();
     if(!data.image)throw new Error(data.error||'Erreur');
-    wrap.outerHTML='<img class="post-img" id="aiimg-'+i+'" src="'+data.image+'" />';
+
+    var finalSrc = data.image;
+    if (bizLogo) {
+      try { finalSrc = await addLogoOverlay(data.image, bizLogo); } catch(e) { console.warn('logo overlay failed', e); }
+    }
+
+    wrap.outerHTML='<img class="post-img" id="aiimg-'+i+'" src="'+finalSrc+'" />';
     var dl=document.getElementById('aidl-'+i);
-    if(dl){dl.style.display='';dl.dataset.src=data.image;}
+    if(dl){dl.style.display='';dl.dataset.src=finalSrc;}
   }catch(e){
     if(wrap)wrap.innerHTML='<div style="color:#ff6b6b;font-size:13px;padding:20px;text-align:center">❌ '+(e.message||'Erreur')+'<br><button onclick="genAiImg('+i+',\''+prompt+'\')" style="margin-top:8px;background:transparent;border:1px solid #ff6b6b;color:#ff6b6b;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px">🔄 Réessayer</button></div>';
   }
+}
+
+// Compose le logo de l'entreprise en bas à droite de l'image générée
+function addLogoOverlay(imageSrc, logoSrc) {
+  return new Promise(function(resolve, reject){
+    var bg = new Image();
+    bg.crossOrigin = 'anonymous';
+    bg.onload = function(){
+      var canvas = document.createElement('canvas');
+      canvas.width = bg.width;
+      canvas.height = bg.height;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(bg, 0, 0);
+
+      var logo = new Image();
+      logo.crossOrigin = 'anonymous';
+      logo.onload = function(){
+        var logoSize = Math.round(bg.width * 0.14);
+        var margin = Math.round(bg.width * 0.035);
+        var x = bg.width - logoSize - margin;
+        var y = bg.height - logoSize - margin;
+
+        // Petit fond blanc arrondi derrière le logo pour qu'il reste lisible
+        var pad = Math.round(logoSize * 0.12);
+        ctx.save();
+        ctx.beginPath();
+        var r = 14;
+        var rx = x - pad, ry = y - pad, rw = logoSize + pad*2, rh = logoSize + pad*2;
+        ctx.moveTo(rx + r, ry);
+        ctx.arcTo(rx + rw, ry, rx + rw, ry + rh, r);
+        ctx.arcTo(rx + rw, ry + rh, rx, ry + rh, r);
+        ctx.arcTo(rx, ry + rh, rx, ry, r);
+        ctx.arcTo(rx, ry, rx + rw, ry, r);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.fill();
+        ctx.restore();
+
+        ctx.drawImage(logo, x, y, logoSize, logoSize);
+        resolve(canvas.toDataURL('image/jpeg', 0.92));
+      };
+      logo.onerror = function(){ resolve(imageSrc); };
+      logo.src = logoSrc;
+    };
+    bg.onerror = function(){ reject(new Error('image load failed')); };
+    bg.src = imageSrc;
+  });
 }
 
 function dlAi(i){
