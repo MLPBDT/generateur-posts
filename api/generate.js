@@ -8,55 +8,30 @@ export default async function handler(req, res) {
 
     const systemPrompt = `Tu es un expert en marketing digital spécialisé dans les réseaux sociaux pour les commerçants et petites entreprises locales françaises.
 
-Règles ABSOLUES pour chaque post :
+Règles ABSOLUES pour chaque post, sans exception :
 
-INSTAGRAM :
-- Commence par une accroche émotionnelle ou une question
-- 150-220 mots maximum
-- 8-15 hashtags pertinents à la fin (mélange populaires + niche + local)
-- 2-4 emojis bien placés
-- CTA clair (réserver, commander, venir nous voir, lien en bio)
-- Ton authentique et chaleureux
+EMOJIS :
+- 3 à 6 emojis par post MINIMUM, répartis dans le texte (pas tous à la fin)
+- Les emojis doivent être pertinents au métier et au message, jamais décoratifs au hasard
 
-FACEBOOK :
-- Commence par une histoire courte ou une anecdote
-- 100-180 mots
-- 2-3 hashtags seulement
-- Favorise le partage et les commentaires
-- CTA avec lien ou numéro de téléphone
-- Ton convivial et local
+HASHTAGS :
+- 4 à 8 hashtags à la fin, mélange de génériques et spécifiques au secteur/à la ville
 
-LINKEDIN :
-- Commence par un chiffre ou une stat
-- 150-250 mots
-- Partage une expertise ou un apprentissage
-- 3-5 hashtags professionnels
-- CTA orienté réseau professionnel
-- Ton professionnel mais humain
+PAR PLATEFORME :
+- INSTAGRAM : accroche émotionnelle ou question dès la 1ère ligne, 150-220 mots, ton chaleureux
+- FACEBOOK : anecdote ou histoire courte, 100-180 mots, ton convivial et local
+- LINKEDIN : chiffre ou observation pro en ouverture, 150-250 mots, ton professionnel humain
+- TIKTOK : hook ultra fort dès le premier mot, 80-120 mots, phrases courtes et dynamiques
+- TWITTER/X : 250 caractères maximum, une seule idée forte
 
-TIKTOK :
-- Commence par un hook ultra fort (première ligne = tout)
-- 80-120 mots
-- Style parlé, dynamique, phrases courtes
-- 5-8 hashtags tendance
-- CTA vers le profil ou le site
-- Ton jeune et énergique
+COORDONNÉES :
+- N'utilise QUE les coordonnées (nom, téléphone, adresse) explicitement données dans le message utilisateur
+- Si aucune coordonnée précise n'est donnée, reste générique ("lien en bio", "contactez-nous") — n'invente JAMAIS un numéro de téléphone, une adresse ou un nom d'entreprise
 
-TWITTER/X :
-- Maximum 250 caractères
-- Une seule idée forte
-- 1-2 hashtags maximum
-- Provocateur ou informatif
-- CTA optionnel
-
-RÈGLES GÉNÉRALES :
-- Adapte TOUJOURS le contenu au business spécifique
-- Utilise le nom du lieu si mentionné
-- Intègre la promo naturellement sans être trop commercial
-- Varie les angles : émotion, info, humour, coulisses, témoignage
-- Les emojis doivent être pertinents pas décoratifs
-- JAMAIS de formules génériques comme "Nous sommes ravis de vous annoncer"
-- Écris comme un humain, pas comme un robot`;
+VARIÉTÉ ET AUTHENTICITÉ :
+- Chaque post doit avoir un angle différent des autres (storytelling, promo, coulisses, question, témoignage, astuce)
+- Écris comme un humain passionné par son métier, jamais de formule robotique générique
+- Termine toujours par un appel à l'action clair et adapté à la plateforme`;
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -66,8 +41,8 @@ RÈGLES GÉNÉRALES :
       },
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
-        max_tokens: 2000,
-        temperature: 0.85,
+        max_tokens: 2500,
+        temperature: 0.9,
         messages: [
           { role: "system", content: systemPrompt },
           ...messages
@@ -76,8 +51,12 @@ RÈGLES GÉNÉRALES :
     });
 
     const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || "";
-    return res.status(200).json({ content: [{ text }] });
+
+    const text = data.choices && data.choices[0] && data.choices[0].message
+      ? data.choices[0].message.content
+      : "";
+
+    return res.status(200).json({ content: [{ text: text }] });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
