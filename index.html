@@ -454,11 +454,48 @@ var bizLogoPos = 'bottom-right';
 // TODO: brancher sur le vrai statut Stripe une fois le paiement en place.
 // Pour l'instant : false = fiche entreprise verrouillée (affiche le CTA upgrade).
 // Mets à true temporairement pour tester la fiche en mode dev.
-var isPaidUser = false; // MODE TEST — repasse à false quand Stripe sera branché pour activer le paywall
+var isPaidUser = false; // mis à jour dynamiquement par checkPaidStatus()
 
 function applyBizLock() {
   document.getElementById('bizLocked').style.display = isPaidUser ? 'none' : 'flex';
   document.getElementById('bizUnlocked').style.display = isPaidUser ? 'block' : 'none';
+}
+
+// ── Vérifie le statut payant via l'email enregistré ─────────
+async function checkPaidStatus() {
+  var email = localStorage.getItem('postia_user_email');
+  if (!email) { applyBizLock(); return; }
+
+  try {
+    var res = await fetch('/api/check-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email })
+    });
+    var data = await res.json();
+    isPaidUser = !!data.isPaid;
+  } catch(e) {
+    isPaidUser = false;
+  }
+  applyBizLock();
+}
+
+// Après un retour de paiement réussi depuis Stripe (?success=true), on demande
+// l'email pour le lier au compte, le temps de mettre en place une vraie auth.
+function handleStripeReturn() {
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('success') === 'true') {
+    var existing = localStorage.getItem('postia_user_email');
+    if (!existing) {
+      var email = prompt("Paiement réussi ! 🎉 Entre l'email que tu as utilisé sur Stripe pour activer ton compte :");
+      if (email) {
+        localStorage.setItem('postia_user_email', email.trim());
+      }
+    }
+    // Nettoie l'URL pour éviter de redemander à chaque rechargement
+    window.history.replaceState({}, '', window.location.pathname);
+    setTimeout(checkPaidStatus, 1500); // petit délai pour laisser le webhook arriver
+  }
 }
 
 // ── Fiche entreprise : sauvegarde / chargement ─────────────
@@ -577,7 +614,8 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
   loadBiz();
-  applyBizLock();
+  handleStripeReturn();
+  checkPaidStatus();
 });
 
 function setPhoto(val) {
