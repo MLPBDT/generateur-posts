@@ -21,9 +21,12 @@ input,select,textarea{font-size:16px !important} /* empêche le zoom auto iOS au
 
 /* Header */
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;gap:10px}
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .credits{flex-shrink:0;white-space:nowrap}
 .logo{font-size:18px;font-weight:600;color:var(--accent)}
 .credits{font-size:13px;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:99px}
+.feedback-btn{width:32px;height:32px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;-webkit-user-select:none;user-select:none}
+.feedback-btn:active{transform:scale(0.9);border-color:var(--accent);color:var(--accent)}
 
 /* Toggle photo/sans photo */
 .toggle-wrap{display:flex;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px;gap:2px}
@@ -59,11 +62,40 @@ input,select,textarea{font-size:16px !important} /* empêche le zoom auto iOS au
 .biz-sub{font-size:11px;color:var(--muted);margin-top:1px}
 .biz-chevron{color:var(--muted);font-size:14px;transition:transform .2s}
 .biz-chevron.open{transform:rotate(180deg)}
+.biz-locked{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.biz-locked:active{background:rgba(255,255,255,.03)}
+.biz-locked .biz-sub{max-width:280px}
+.biz-lock-badge{font-size:10px;font-weight:700;color:#000;background:var(--accent);border-radius:99px;padding:2px 8px;margin-left:6px;vertical-align:1px}
+
+/* Popup upgrade */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.overlay.show{display:flex}
+.popup{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;max-width:380px;width:100%;text-align:center}
+.popup-icon{font-size:44px;margin-bottom:14px}
+.popup-title{font-size:19px;font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:-0.3px}
+.popup-sub{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.btn-popup{width:100%;background:var(--accent);color:#000;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;padding:14px;cursor:pointer;min-height:48px;margin-bottom:8px}
+.btn-popup:active{transform:scale(0.98)}
+.btn-popup-sec{width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;padding:12px;cursor:pointer;min-height:44px}
+.btn-popup-sec:active{transform:scale(0.98);color:var(--text)}
+.btn-popup:active{transform:scale(0.98)}
 .biz-body{padding:0 16px 16px}
 .logo-upload{border:1.5px dashed var(--border);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .15s}
 .logo-upload:active{border-color:var(--accent)}
 .logo-upload img{width:48px;height:48px;border-radius:8px;object-fit:cover;margin:0 auto 6px;display:block}
 .hint{font-size:11px;color:#a89a3a;background:rgba(200,241,53,.08);border:1px solid rgba(200,241,53,.2);border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.5}
+
+/* Sélecteur position logo */
+.logo-pos-grid{position:relative;background:#0a0a0a;border:1px solid var(--border);border-radius:10px;aspect-ratio:16/10;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr}
+.logo-pos-cell{display:flex;align-items:center;justify-content:center;cursor:pointer}
+.logo-pos-cell[data-pos="top-left"]{grid-column:1;grid-row:1;justify-self:start;align-self:start;padding:8px}
+.logo-pos-cell[data-pos="top-right"]{grid-column:3;grid-row:1;justify-self:end;align-self:start;padding:8px}
+.logo-pos-cell[data-pos="center"]{grid-column:2;grid-row:2}
+.logo-pos-cell[data-pos="bottom-left"]{grid-column:1;grid-row:3;justify-self:start;align-self:end;padding:8px}
+.logo-pos-cell[data-pos="bottom-right"]{grid-column:3;grid-row:3;justify-self:end;align-self:end;padding:8px}
+.logo-pos-dot{width:18px;height:18px;border-radius:6px;background:var(--border);transition:all .15s;-webkit-user-select:none;user-select:none}
+.logo-pos-cell:active .logo-pos-dot{transform:scale(0.85)}
+.logo-pos-cell.active .logo-pos-dot{background:var(--accent);box-shadow:0 0 0 4px rgba(200,241,53,.2)}
 .form-label{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:8px;display:block}
 .form-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;padding:14px 16px;outline:none;transition:border-color .2s}
 .form-input:focus{border-color:var(--accent)}
@@ -127,7 +159,10 @@ select.form-input option{background:var(--card)}
 
   <div class="header">
     <div class="logo">PostIA ✦</div>
-    <div class="credits">200 posts restants</div>
+    <div class="header-right">
+      <div class="credits">200 posts restants</div>
+      <button class="feedback-btn" id="feedbackBtn" onclick="openFeedback()" aria-label="Donner un avis ou une suggestion">?</button>
+    </div>
   </div>
 
   <!-- Toggle avec/sans photo -->
@@ -165,8 +200,21 @@ select.form-input option{background:var(--card)}
     <input type="text" class="form-input" id="iaDesc" placeholder="Ex: fond bleu pastel, avec des fleurs, ambiance cosy, vue de dessus...">
   </div>
 
-  <!-- Fiche entreprise -->
+  <!-- Fiche entreprise (réservée aux comptes avec abonnement) -->
   <div class="biz-card" id="bizCard">
+    <!-- Version verrouillée -->
+    <div class="biz-locked" id="bizLocked" onclick="showPopup()">
+      <div class="biz-header-left">
+        <span style="font-size:18px">🏢</span>
+        <div>
+          <div class="biz-title">Ma fiche entreprise <span class="biz-lock-badge">🔒 Pro</span></div>
+          <div class="biz-sub">Coordonnées réelles + logo sur tes posts — débloqué avec un abonnement</div>
+        </div>
+      </div>
+      <span class="biz-chevron">→</span>
+    </div>
+    <!-- Version débloquée -->
+    <div id="bizUnlocked" style="display:none">
     <div class="biz-header" onclick="toggleBiz()">
       <div class="biz-header-left">
         <span style="font-size:18px">🏢</span>
@@ -208,8 +256,19 @@ select.form-input option{background:var(--card)}
             <span style="font-size:13px;color:var(--muted)">📤 Ajouter ton logo</span>
           </div>
         </div>
+        <div id="logoPosWrap" style="display:none;margin-top:12px">
+          <label class="form-label">Position du logo sur l'image</label>
+          <div class="logo-pos-grid" id="logoPosGrid">
+            <div class="logo-pos-cell" data-pos="top-left"><div class="logo-pos-dot"></div></div>
+            <div class="logo-pos-cell" data-pos="top-right"><div class="logo-pos-dot"></div></div>
+            <div class="logo-pos-cell" data-pos="center"><div class="logo-pos-dot"></div></div>
+            <div class="logo-pos-cell" data-pos="bottom-left"><div class="logo-pos-dot"></div></div>
+            <div class="logo-pos-cell active" data-pos="bottom-right"><div class="logo-pos-dot"></div></div>
+          </div>
+        </div>
       </div>
     </div>
+    </div><!-- /bizUnlocked -->
   </div>
 
   <!-- Formulaire -->
@@ -272,10 +331,71 @@ select.form-input option{background:var(--card)}
   </div>
 
 </div>
+
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <div class="popup-icon">🏢</div>
+    <div class="popup-title">Personnalise tes posts à fond</div>
+    <div class="popup-sub">Passe en Pro pour débloquer ta fiche entreprise : coordonnées réelles utilisées dans tes posts + ton logo incrusté sur les images générées.</div>
+    <button class="btn-popup" onclick="closePopup()">J'ai compris 👍</button>
+  </div>
+</div>
+
+<div class="overlay" id="feedbackOverlay">
+  <div class="popup">
+    <div class="popup-icon">💬</div>
+    <div class="popup-title">Une idée ou un souci ?</div>
+    <div class="popup-sub">Tes retours m'aident à améliorer PostIA rapidement. Dis-moi tout !</div>
+    <div class="form-group" style="text-align:left">
+      <label class="form-label">Ton message</label>
+      <textarea class="form-input" id="feedbackText" rows="4" placeholder="Ex: j'aimerais pouvoir changer la couleur des posts, ou : il y a un bug quand..." style="resize:vertical;min-height:90px;font-family:inherit"></textarea>
+    </div>
+    <div class="form-group" style="text-align:left">
+      <label class="form-label">Ton email <span style="color:#555;font-weight:400">(optionnel, pour te répondre)</span></label>
+      <input type="email" class="form-input" id="feedbackEmail" placeholder="toi@exemple.com">
+    </div>
+    <button class="btn-popup" id="feedbackSendBtn" onclick="sendFeedback()">Envoyer 🚀</button>
+    <button class="btn-popup-sec" onclick="closeFeedback()">Annuler</button>
+  </div>
+</div>
+
 <script>
+function showPopup(){ document.getElementById('overlay').classList.add('show'); }
+function closePopup(){ document.getElementById('overlay').classList.remove('show'); }
+
+function openFeedback(){ document.getElementById('feedbackOverlay').classList.add('show'); }
+function closeFeedback(){ document.getElementById('feedbackOverlay').classList.remove('show'); }
+
+function sendFeedback(){
+  var msg = document.getElementById('feedbackText').value.trim();
+  var email = document.getElementById('feedbackEmail').value.trim();
+  if (!msg) { document.getElementById('feedbackText').focus(); return; }
+
+  var subject = encodeURIComponent('Feedback PostIA');
+  var body = encodeURIComponent(
+    msg + '\n\n---\nEmail pour réponse : ' + (email || 'non renseigné')
+  );
+  window.location.href = 'mailto:mattfau83@gmail.com?subject=' + subject + '&body=' + body;
+
+  document.getElementById('feedbackText').value = '';
+  document.getElementById('feedbackEmail').value = '';
+  closeFeedback();
+}
 var mode = 'sans';
 var photos = [];
 var bizLogo = null;
+var bizLogoPos = 'bottom-right';
+
+// ── Statut d'abonnement ─────────────────────────────────────
+// TODO: brancher sur le vrai statut Stripe une fois le paiement en place.
+// Pour l'instant : false = fiche entreprise verrouillée (affiche le CTA upgrade).
+// Mets à true temporairement pour tester la fiche en mode dev.
+var isPaidUser = true; // MODE TEST — repasse à false quand Stripe sera branché pour activer le paywall
+
+function applyBizLock() {
+  document.getElementById('bizLocked').style.display = isPaidUser ? 'none' : 'flex';
+  document.getElementById('bizUnlocked').style.display = isPaidUser ? 'block' : 'none';
+}
 
 // ── Fiche entreprise : sauvegarde / chargement ─────────────
 var BIZ_FIELDS = ['bizName','bizPhone','bizCity','bizAddress','bizWeb'];
@@ -288,7 +408,10 @@ function loadBiz() {
     });
     if (saved.logo) {
       bizLogo = saved.logo;
+      bizLogoPos = saved.logoPos || 'bottom-right';
       renderLogoPreview();
+      setLogoPosUI(bizLogoPos);
+      document.getElementById('logoPosWrap').style.display = 'block';
     }
     updateBizSub();
   } catch(e) {}
@@ -300,7 +423,7 @@ function saveBiz() {
     var el = document.getElementById(id);
     if (el) data[id] = el.value.trim();
   });
-  if (bizLogo) data.logo = bizLogo;
+  if (bizLogo) { data.logo = bizLogo; data.logoPos = bizLogoPos; }
   localStorage.setItem('postia_biz', JSON.stringify(data));
   updateBizSub();
 }
@@ -334,6 +457,7 @@ function handleLogo(e) {
   r.onload = function(ev) {
     bizLogo = ev.target.result;
     renderLogoPreview();
+    document.getElementById('logoPosWrap').style.display = 'block';
     saveBiz();
   };
   r.readAsDataURL(f);
@@ -348,8 +472,25 @@ function renderLogoPreview() {
   }
 }
 
+function setLogoPosUI(pos) {
+  document.querySelectorAll('.logo-pos-cell').forEach(function(c){
+    c.classList.toggle('active', c.dataset.pos === pos);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.logo-pos-cell').forEach(function(cell){
+    cell.addEventListener('click', function(){
+      bizLogoPos = cell.dataset.pos;
+      setLogoPosUI(bizLogoPos);
+      saveBiz();
+    });
+  });
+});
+
 function getBizData() {
-  var data = { logo: bizLogo };
+  if (!isPaidUser) return { logo: null, logoPos: 'bottom-right', bizName:'', bizPhone:'', bizCity:'', bizAddress:'', bizWeb:'' };
+  var data = { logo: bizLogo, logoPos: bizLogoPos };
   BIZ_FIELDS.forEach(function(id){
     var el = document.getElementById(id);
     data[id] = el ? el.value.trim() : '';
@@ -372,6 +513,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
   loadBiz();
+  applyBizLock();
 });
 
 function setPhoto(val) {
@@ -548,7 +690,7 @@ async function genAiImg(i,prompt){
 
     var finalSrc = data.image;
     if (bizLogo) {
-      try { finalSrc = await addLogoOverlay(data.image, bizLogo); } catch(e) { console.warn('logo overlay failed', e); }
+      try { finalSrc = await addLogoOverlay(data.image, bizLogo, bizLogoPos); } catch(e) { console.warn('logo overlay failed', e); }
     }
 
     wrap.outerHTML='<img class="post-img" id="aiimg-'+i+'" src="'+finalSrc+'" />';
@@ -559,8 +701,9 @@ async function genAiImg(i,prompt){
   }
 }
 
-// Compose le logo de l'entreprise en bas à droite de l'image générée
-function addLogoOverlay(imageSrc, logoSrc) {
+// Compose le logo de l'entreprise à la position choisie sur l'image générée
+function addLogoOverlay(imageSrc, logoSrc, position) {
+  position = position || 'bottom-right';
   return new Promise(function(resolve, reject){
     var bg = new Image();
     bg.crossOrigin = 'anonymous';
@@ -576,8 +719,13 @@ function addLogoOverlay(imageSrc, logoSrc) {
       logo.onload = function(){
         var logoSize = Math.round(bg.width * 0.14);
         var margin = Math.round(bg.width * 0.035);
-        var x = bg.width - logoSize - margin;
-        var y = bg.height - logoSize - margin;
+        var x, y;
+
+        if (position === 'top-left') { x = margin; y = margin; }
+        else if (position === 'top-right') { x = bg.width - logoSize - margin; y = margin; }
+        else if (position === 'center') { x = (bg.width - logoSize) / 2; y = (bg.height - logoSize) / 2; }
+        else if (position === 'bottom-left') { x = margin; y = bg.height - logoSize - margin; }
+        else { x = bg.width - logoSize - margin; y = bg.height - logoSize - margin; } // bottom-right par défaut
 
         // Petit fond blanc arrondi derrière le logo pour qu'il reste lisible
         var pad = Math.round(logoSize * 0.12);
