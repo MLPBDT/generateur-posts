@@ -454,7 +454,7 @@ var bizLogoPos = 'bottom-right';
 // TODO: brancher sur le vrai statut Stripe une fois le paiement en place.
 // Pour l'instant : false = fiche entreprise verrouillée (affiche le CTA upgrade).
 // Mets à true temporairement pour tester la fiche en mode dev.
-var isPaidUser = true; // MODE TEST — repasse à false quand Stripe sera branché pour activer le paywall
+var isPaidUser = false; // MODE TEST — repasse à false quand Stripe sera branché pour activer le paywall
 
 function applyBizLock() {
   document.getElementById('bizLocked').style.display = isPaidUser ? 'none' : 'flex';
