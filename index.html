@@ -70,7 +70,24 @@ input,select,textarea{font-size:16px !important} /* empêche le zoom auto iOS au
 /* Popup upgrade */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;align-items:center;justify-content:center;padding:20px}
 .overlay.show{display:flex}
-.popup{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;max-width:380px;width:100%;text-align:center}
+.popup{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:460px;width:100%;text-align:center}
+
+/* Plans pricing popup */
+.plans-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 14px;text-align:left}
+@media(max-width:420px){.plans-grid{grid-template-columns:1fr}}
+.plan-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:16px 14px;position:relative;display:flex;flex-direction:column}
+.plan-card.featured{border-color:var(--accent);background:rgba(200,241,53,.06)}
+.plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.plan-name{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.plan-card.featured .plan-name{color:var(--accent)}
+.plan-price{font-size:26px;font-weight:800;color:var(--text);margin-bottom:10px}
+.plan-price span{font-size:13px;font-weight:500;color:var(--muted)}
+.plan-feat{list-style:none;margin-bottom:14px;flex:1}
+.plan-feat li{font-size:12px;color:var(--muted);padding:4px 0;line-height:1.4}
+.plan-feat li::before{content:"✓ ";color:var(--accent);font-weight:700}
+.btn-plan{margin-bottom:0;font-size:13px;padding:11px;min-height:42px}
+.plan-card:not(.featured) .btn-plan{background:transparent;border:1.5px solid var(--accent);color:var(--accent)}
+.trial-note{font-size:12px;color:var(--muted);margin-bottom:14px}
 .popup-icon{font-size:44px;margin-bottom:14px}
 .popup-title{font-size:19px;font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:-0.3px}
 .popup-sub{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6}
@@ -334,10 +351,34 @@ select.form-input option{background:var(--card)}
 
 <div class="overlay" id="overlay">
   <div class="popup">
-    <div class="popup-icon">🏢</div>
-    <div class="popup-title">Personnalise tes posts à fond</div>
-    <div class="popup-sub">Passe en Pro pour débloquer ta fiche entreprise : coordonnées réelles utilisées dans tes posts + ton logo incrusté sur les images générées.</div>
-    <button class="btn-popup" onclick="closePopup()">J'ai compris 👍</button>
+    <div class="popup-icon">🚀</div>
+    <div class="popup-title">Passe à la vitesse supérieure</div>
+    <div class="popup-sub">Débloque ta fiche entreprise, ton logo sur les images, et plus de générations chaque mois.</div>
+    <div class="plans-grid">
+      <div class="plan-card">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">14€<span>/mois</span></div>
+        <ul class="plan-feat">
+          <li>100 générations/mois</li>
+          <li>Texte + tes photos</li>
+          <li>Hashtags optimisés</li>
+        </ul>
+        <button class="btn-popup btn-plan" onclick="startCheckout('starter')" id="btnStarter">Choisir Starter</button>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-badge">⭐ Recommandé</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">24€<span>/mois</span></div>
+        <ul class="plan-feat">
+          <li>300 générations/mois</li>
+          <li>Fiche entreprise + logo</li>
+          <li>Support prioritaire</li>
+        </ul>
+        <button class="btn-popup btn-plan" onclick="startCheckout('pro')" id="btnPro">Choisir Pro</button>
+      </div>
+    </div>
+    <div class="trial-note">✓ 7 jours d'essai gratuit · sans engagement</div>
+    <button class="btn-popup-sec" onclick="closePopup()">Plus tard</button>
   </div>
 </div>
 
@@ -362,6 +403,29 @@ select.form-input option{background:var(--card)}
 <script>
 function showPopup(){ document.getElementById('overlay').classList.add('show'); }
 function closePopup(){ document.getElementById('overlay').classList.remove('show'); }
+
+async function startCheckout(plan){
+  var btnId = plan === 'pro' ? 'btnPro' : 'btnStarter';
+  var btn = document.getElementById(btnId);
+  var originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Chargement...';
+
+  try {
+    var res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ plan: plan })
+    });
+    var data = await res.json();
+    if (!res.ok || !data.url) throw new Error(data.error || 'Erreur');
+    window.location.href = data.url;
+  } catch(e) {
+    alert('Erreur lors de la création du paiement : ' + (e.message || 'réessaie.'));
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
 
 function openFeedback(){ document.getElementById('feedbackOverlay').classList.add('show'); }
 function closeFeedback(){ document.getElementById('feedbackOverlay').classList.remove('show'); }
