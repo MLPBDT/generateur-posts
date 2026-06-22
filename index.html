@@ -26,6 +26,12 @@ input,select,textarea{font-size:16px !important} /* empêche le zoom auto iOS au
 .logo{font-size:18px;font-weight:600;color:var(--accent)}
 .credits{font-size:13px;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:99px}
 .feedback-btn{width:32px;height:32px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;-webkit-user-select:none;user-select:none}
+.account-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:600;padding:7px 12px;border-radius:99px;cursor:pointer;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis;transition:all .15s;-webkit-user-select:none;user-select:none}
+.account-btn:active{transform:scale(0.95);border-color:var(--accent);color:var(--accent)}
+@media(max-width:380px){
+  .credits{display:none}
+  .account-btn{max-width:90px;font-size:11px}
+}
 .feedback-btn:active{transform:scale(0.9);border-color:var(--accent);color:var(--accent)}
 
 /* Toggle photo/sans photo */
@@ -177,6 +183,7 @@ select.form-input option{background:var(--card)}
   <div class="header">
     <div class="logo">PostIA ✦</div>
     <div class="header-right">
+      <button class="account-btn" id="accountBtn" onclick="userEmail ? logout() : openLogin()">👤 Se connecter</button>
       <div class="credits">200 posts restants</div>
       <button class="feedback-btn" id="feedbackBtn" onclick="openFeedback()" aria-label="Donner un avis ou une suggestion">?</button>
     </div>
@@ -400,6 +407,21 @@ select.form-input option{background:var(--card)}
   </div>
 </div>
 
+<div class="overlay" id="loginOverlay">
+  <div class="popup">
+    <div class="popup-icon">🔑</div>
+    <div class="popup-title">Connexion à ton compte</div>
+    <div class="popup-sub">Entre l'email utilisé lors de ton paiement. Tu recevras un lien de connexion par email, sans mot de passe.</div>
+    <div class="form-group" style="text-align:left">
+      <label class="form-label">Ton email</label>
+      <input type="email" class="form-input" id="loginEmail" placeholder="toi@exemple.com">
+    </div>
+    <div id="loginStatus" style="font-size:12px;margin-bottom:10px;min-height:16px"></div>
+    <button class="btn-popup" id="loginSendBtn" onclick="sendMagicLink()">Recevoir le lien</button>
+    <button class="btn-popup-sec" onclick="closeLogin()">Annuler</button>
+  </div>
+</div>
+
 <script>
 function showPopup(){ document.getElementById('overlay').classList.add('show'); }
 function closePopup(){ document.getElementById('overlay').classList.remove('show'); }
@@ -455,22 +477,48 @@ var bizLogoPos = 'bottom-right';
 // Pour l'instant : false = fiche entreprise verrouillée (affiche le CTA upgrade).
 // Mets à true temporairement pour tester la fiche en mode dev.
 var isPaidUser = false; // mis à jour dynamiquement par checkPaidStatus()
+var userEmail = null;
 
 function applyBizLock() {
   document.getElementById('bizLocked').style.display = isPaidUser ? 'none' : 'flex';
   document.getElementById('bizUnlocked').style.display = isPaidUser ? 'block' : 'none';
 }
 
-// ── Vérifie le statut payant via l'email enregistré ─────────
+// ── Session : on résout d'abord le token de session, qui donne l'email ────
+async function resolveSession() {
+  var sessionToken = localStorage.getItem('postia_session');
+  if (!sessionToken) return null;
+
+  try {
+    var res = await fetch('/api/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionToken: sessionToken })
+    });
+    var data = await res.json();
+    if (!data.email) {
+      // session expirée ou invalide
+      localStorage.removeItem('postia_session');
+      return null;
+    }
+    return data.email;
+  } catch(e) {
+    return null;
+  }
+}
+
+// ── Vérifie le statut payant via l'email de la session active ─────────
 async function checkPaidStatus() {
-  var email = localStorage.getItem('postia_user_email');
-  if (!email) { applyBizLock(); return; }
+  userEmail = await resolveSession();
+  updateAccountUI();
+
+  if (!userEmail) { isPaidUser = false; applyBizLock(); return; }
 
   try {
     var res = await fetch('/api/check-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email })
+      body: JSON.stringify({ email: userEmail })
     });
     var data = await res.json();
     isPaidUser = !!data.isPaid;
@@ -480,21 +528,87 @@ async function checkPaidStatus() {
   applyBizLock();
 }
 
-// Après un retour de paiement réussi depuis Stripe (?success=true), on demande
-// l'email pour le lier au compte, le temps de mettre en place une vraie auth.
+function updateAccountUI() {
+  var btn = document.getElementById('accountBtn');
+  if (!btn) return;
+  btn.textContent = userEmail ? '👤 ' + userEmail.split('@')[0] : '👤 Se connecter';
+}
+
+// ── Récupère le token de session depuis l'URL après le clic sur le lien magique
+function handleMagicLinkReturn() {
+  var params = new URLSearchParams(window.location.search);
+  var sessionToken = params.get('session');
+  if (sessionToken) {
+    localStorage.setItem('postia_session', sessionToken);
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+  var authError = params.get('auth_error');
+  if (authError) {
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+}
+
+// Après un retour de paiement réussi depuis Stripe, on propose de se connecter
+// si ce n'est pas déjà fait — l'email du paiement sera lié via webhook.
 function handleStripeReturn() {
   var params = new URLSearchParams(window.location.search);
   if (params.get('success') === 'true') {
-    var existing = localStorage.getItem('postia_user_email');
-    if (!existing) {
-      var email = prompt("Paiement réussi ! 🎉 Entre l'email que tu as utilisé sur Stripe pour activer ton compte :");
-      if (email) {
-        localStorage.setItem('postia_user_email', email.trim());
-      }
-    }
-    // Nettoie l'URL pour éviter de redemander à chaque rechargement
     window.history.replaceState({}, '', window.location.pathname);
-    setTimeout(checkPaidStatus, 1500); // petit délai pour laisser le webhook arriver
+    setTimeout(function(){
+      if (!localStorage.getItem('postia_session')) {
+        openLogin();
+      } else {
+        checkPaidStatus();
+      }
+    }, 1200); // petit délai pour laisser le webhook Stripe arriver
+  }
+}
+
+// ── Connexion par lien magique ──────────────────────────────
+function openLogin() { document.getElementById('loginOverlay').classList.add('show'); }
+function closeLogin() { document.getElementById('loginOverlay').classList.remove('show'); }
+
+function logout() {
+  localStorage.removeItem('postia_session');
+  userEmail = null;
+  isPaidUser = false;
+  updateAccountUI();
+  applyBizLock();
+}
+
+async function sendMagicLink() {
+  var emailInput = document.getElementById('loginEmail');
+  var email = emailInput.value.trim();
+  var btn = document.getElementById('loginSendBtn');
+  var statusEl = document.getElementById('loginStatus');
+
+  if (!email || !email.includes('@')) {
+    statusEl.textContent = 'Entre un email valide.';
+    statusEl.style.color = '#ff6b6b';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Envoi...';
+  statusEl.textContent = '';
+
+  try {
+    var res = await fetch('/api/send-magic-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email })
+    });
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur');
+
+    statusEl.textContent = '✓ Email envoyé ! Vérifie ta boîte de réception.';
+    statusEl.style.color = 'var(--accent)';
+    btn.textContent = 'Envoyé ✓';
+  } catch(e) {
+    statusEl.textContent = 'Erreur : ' + (e.message || 'réessaie.');
+    statusEl.style.color = '#ff6b6b';
+    btn.disabled = false;
+    btn.textContent = 'Recevoir le lien';
   }
 }
 
@@ -614,6 +728,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
   loadBiz();
+  handleMagicLinkReturn();
   handleStripeReturn();
   checkPaidStatus();
 });
