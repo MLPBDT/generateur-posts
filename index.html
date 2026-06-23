@@ -280,6 +280,7 @@ select.form-input option{background:var(--card)}
             <span style="font-size:13px;color:var(--muted)">📤 Ajouter ton logo</span>
           </div>
         </div>
+        <div class="hint" style="margin-top:8px">💡 Pour un rendu pro, utilise un logo en PNG avec fond transparent — c'est ce qu'utilisent toutes les marques sur les réseaux. Un fond blanc ou coloré sera visible en carré sur l'image.</div>
         <div id="logoPosWrap" style="display:none;margin-top:12px">
           <label class="form-label">Position du logo sur l'image</label>
           <div class="logo-pos-grid" id="logoPosGrid">
@@ -973,23 +974,16 @@ function addLogoOverlay(imageSrc, logoSrc, position) {
         else if (position === 'bottom-left') { x = margin; y = bg.height - logoSize - margin; }
         else { x = bg.width - logoSize - margin; y = bg.height - logoSize - margin; } // bottom-right par défaut
 
-        // Petit fond blanc arrondi derrière le logo pour qu'il reste lisible
-        var pad = Math.round(logoSize * 0.12);
+        // Ombre portée légère pour garder le logo lisible même sur fond clair,
+        // sans ajouter de fond blanc — respecte la transparence du PNG du logo.
         ctx.save();
-        ctx.beginPath();
-        var r = 14;
-        var rx = x - pad, ry = y - pad, rw = logoSize + pad*2, rh = logoSize + pad*2;
-        ctx.moveTo(rx + r, ry);
-        ctx.arcTo(rx + rw, ry, rx + rw, ry + rh, r);
-        ctx.arcTo(rx + rw, ry + rh, rx, ry + rh, r);
-        ctx.arcTo(rx, ry + rh, rx, ry, r);
-        ctx.arcTo(rx, ry, rx + rw, ry, r);
-        ctx.closePath();
-        ctx.fillStyle = 'rgba(255,255,255,0.92)';
-        ctx.fill();
+        ctx.shadowColor = 'rgba(0,0,0,0.45)';
+        ctx.shadowBlur = Math.round(logoSize * 0.08);
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = Math.round(logoSize * 0.02);
+        ctx.drawImage(logo, x, y, logoSize, logoSize);
         ctx.restore();
 
-        ctx.drawImage(logo, x, y, logoSize, logoSize);
         resolve(canvas.toDataURL('image/jpeg', 0.92));
       };
       logo.onerror = function(){ resolve(imageSrc); };
