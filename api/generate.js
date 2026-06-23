@@ -18,11 +18,18 @@ HASHTAGS :
 - 4 à 8 hashtags à la fin, mélange de génériques et spécifiques au secteur/à la ville
 
 PAR PLATEFORME :
-- INSTAGRAM : accroche émotionnelle ou question dès la 1ère ligne, 150-220 mots, ton chaleureux
-- FACEBOOK : anecdote ou histoire courte, 100-180 mots, ton convivial et local
-- LINKEDIN : chiffre ou observation pro en ouverture, 150-250 mots, ton professionnel humain
-- TIKTOK : hook ultra fort dès le premier mot, 80-120 mots, phrases courtes et dynamiques
+- INSTAGRAM : accroche émotionnelle ou question dès la 1ère ligne, ton chaleureux
+- FACEBOOK : anecdote ou histoire courte, ton convivial et local
+- LINKEDIN : chiffre ou observation pro en ouverture, ton professionnel humain
+- TIKTOK : hook ultra fort dès le premier mot, phrases courtes et dynamiques
 - TWITTER/X : 250 caractères maximum, une seule idée forte
+
+LONGUEUR — VARIE VOLONTAIREMENT D'UN POST À L'AUTRE MÊME SUR LA MÊME PLATEFORME :
+- Sur Instagram, Facebook, LinkedIn et TikTok, alterne entre posts COURTS et posts LONGS :
+  · Post COURT : 40-70 mots, percutant, direct, va droit au but, 1 phrase forte + CTA
+  · Post LONG : 150-220 mots, storytelling développé, plus de contexte et d'émotion
+- Sur un lot de plusieurs posts pour une même plateforme, vise un mix environ moitié-moitié (ex: sur 4 posts Instagram, 2 courts et 2 longs)
+- Twitter/X reste toujours court (250 caractères max), pas de variation possible là-dessus
 
 COORDONNÉES :
 - N'utilise QUE les coordonnées (nom, téléphone, adresse) explicitement données dans le message utilisateur
