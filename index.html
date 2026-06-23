@@ -750,6 +750,14 @@ function setPhoto(val) {
   document.getElementById('uploadZone').classList.toggle('visible', mode==='avec');
   document.getElementById('iaStyleGroup').style.display = mode==='ia' ? 'block' : 'none';
   document.getElementById('iaDescGroup').style.display = mode==='ia' ? 'block' : 'none';
+
+  // Si on quitte le mode "Avec mes photos", on vide les photos uploadées :
+  // sinon elles restent en mémoire et s'affichent par erreur à la place
+  // d'une image IA générée ou en mode texte seul.
+  if (mode !== 'avec' && photos.length > 0) {
+    photos = [];
+    renderGrid();
+  }
 }
 
 document.querySelectorAll('.plat-btn').forEach(function(b){
@@ -808,7 +816,7 @@ async function generate(){
   document.getElementById('loader').classList.add('show');
   document.getElementById('results').classList.remove('show');
 
-  var photoLine = photos.length > 0
+  var photoLine = (mode==='avec' && photos.length > 0)
     ? '- Photos uploadées : '+photos.map(function(p){ return '"'+p.name+'"'; }).join(', ')+'.\n' : '';
   var promoLine = promo ? '- Promo : '+promo+'\n' : '';
   var iaDescVal = mode==='ia' ? document.getElementById('iaDesc').value.trim() : '';
@@ -816,7 +824,7 @@ async function generate(){
   var iaLine = mode==='ia' ? '- Pour chaque post ajoute "image_prompt": prompt anglais 15 mots max décrivant une image. Style: '+document.getElementById('iaStyle').value+'.'+iaDescLine+'\n' : '';
   var extraFields = '';
   if(mode==='ia') extraFields+=', "image_prompt": "..."';
-  if(photos.length>0) extraFields+=', "photo_index": 0';
+  if(mode==='avec' && photos.length>0) extraFields+=', "photo_index": 0';
 
   // Fiche entreprise : on ne donne QUE les infos réellement fournies, jamais d'invention
   var biz = getBizData();
@@ -891,7 +899,7 @@ function renderPosts(posts){
     var photoHtml='';
     var dlBtn='';
 
-    if(photos.length>0){
+    if(mode==='avec' && photos.length>0){
       var idx=(typeof post.photo_index==='number'&&post.photo_index>=0&&post.photo_index<photos.length)?post.photo_index:(i%photos.length);
       photoHtml='<img class="post-img" src="'+photos[idx].dataUrl+'" />';
       dlBtn='<button class="btn-sm" onclick="dlPhoto('+idx+','+i+')">⬇ Photo</button>';
