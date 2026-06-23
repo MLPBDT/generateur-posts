@@ -329,6 +329,15 @@ select.form-input option{background:var(--card)}
   </div>
 
   <div class="form-group">
+    <label class="form-label">Longueur des posts</label>
+    <select class="form-input" id="lengthPref">
+      <option value="mix" selected>🔀 Mix (courts et longs)</option>
+      <option value="short">⚡ Toujours courts et percutants</option>
+      <option value="long">📖 Toujours longs et détaillés</option>
+    </select>
+  </div>
+
+  <div class="form-group">
     <label class="form-label">Réseaux sociaux</label>
     <div class="platforms">
       <button class="plat-btn active" data-p="Instagram">Instagram</button>
@@ -787,6 +796,7 @@ async function generate(){
   var promo=document.getElementById('promo').value.trim();
   var tone=document.getElementById('tone').value;
   var count=document.getElementById('count').value;
+  var lengthPref=document.getElementById('lengthPref').value;
   var platforms=getPlatforms();
 
   document.getElementById('err').classList.remove('show');
@@ -820,6 +830,16 @@ async function generate(){
     ? 'IMPORTANT : utilise UNIQUEMENT les coordonnées exactes données ci-dessus. N\'invente JAMAIS de numéro de téléphone, adresse ou nom différent.\n'
     : 'Aucune coordonnée précise fournie : ne mentionne ni numéro de téléphone ni adresse inventée. Reste générique sur ces points (ex: "lien en bio", "contactez-nous").\n';
 
+  // Préférence de longueur choisie par le client
+  var lengthLine;
+  if (lengthPref === 'short') {
+    lengthLine = 'IMPORTANT — LONGUEUR : tous les posts doivent être COURTS et percutants (40-70 mots, sauf Twitter/X qui reste à 250 caractères max), 1 phrase forte + CTA, sans développement long.\n';
+  } else if (lengthPref === 'long') {
+    lengthLine = 'IMPORTANT — LONGUEUR : tous les posts doivent être LONGS et détaillés (150-220 mots, sauf Twitter/X qui reste à 250 caractères max), avec un vrai storytelling développé et du contexte.\n';
+  } else {
+    lengthLine = 'IMPORTANT — LONGUEUR : varie volontairement entre posts courts (40-70 mots) et posts longs (150-220 mots) sur une même plateforme, environ moitié-moitié. Twitter/X reste toujours à 250 caractères max.\n';
+  }
+
   var prompt='Tu es un expert en marketing digital spécialisé dans les réseaux sociaux pour commerçants locaux.\n\n'
     + 'Génère exactement '+count+' posts DIFFÉRENTS et PERCUTANTS pour :\n'
     + '- Activité détaillée : '+business+'\n'
@@ -827,6 +847,7 @@ async function generate(){
     + '- Plateformes : '+platforms.join(', ')+'\n'
     + promoLine + photoLine + iaLine
     + '- Ton de voix : '+tone+'\n\n'
+    + lengthLine
     + bizWarning
     + 'RÈGLES OBLIGATOIRES :\n'
     + '1. EMOJIS : chaque post doit contenir entre 3 et 6 emojis pertinents et bien répartis dans le texte (pas seulement à la fin).\n'
@@ -834,7 +855,7 @@ async function generate(){
     + '3. VARIÉTÉ : donne à chaque post un angle différent (storytelling, promo directe, coulisses, question d\'engagement, témoignage, astuce).\n'
     + '4. APPEL À L\'ACTION : termine par un CTA clair adapté à la plateforme (réserver, venir, lien en bio, appeler...).\n'
     + '5. AUTHENTICITÉ : écris comme un humain passionné par son métier, jamais de formule robotique comme "Nous sommes ravis de vous annoncer".\n'
-    + '6. Adapte la longueur et le style au format propre de chaque plateforme (Instagram chaleureux, LinkedIn pro, TikTok punchy, etc).\n\n'
+    + '6. Adapte le style au format propre de chaque plateforme (Instagram chaleureux, LinkedIn pro, TikTok punchy, etc), en respectant la consigne de longueur donnée plus haut.\n\n'
     + 'Réponds UNIQUEMENT en JSON valide sans markdown :\n'
     + '{"posts":[{"platform":"nom","content":"texte complet avec emojis et hashtags"'+extraFields+'},…]}';
 
