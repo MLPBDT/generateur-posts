@@ -202,7 +202,7 @@ select.form-input option{background:var(--card)}
     <div class="logo">PostIA ✦</div>
     <div class="header-right">
       <button class="account-btn" id="accountBtn" onclick="userEmail ? logout() : openLogin()">👤 Se connecter</button>
-      <div class="credits">200 posts restants</div>
+      <div class="credits" id="trialBadge">3 essais gratuits</div>
       <button class="feedback-btn" id="feedbackBtn" onclick="openFeedback()" aria-label="Donner un avis ou une suggestion">?</button>
     </div>
   </div>
@@ -505,11 +505,41 @@ var bizLogoPos = 'bottom-right';
 // Pour l'instant : false = fiche entreprise verrouillée (affiche le CTA upgrade).
 // Mets à true temporairement pour tester la fiche en mode dev.
 var isPaidUser = false; // mis à jour dynamiquement par checkPaidStatus()
+var MAX_TRIALS = 3;
+
+// ── Compteur d'essais gratuits (uniquement pour les non-abonnés) ──────
+function getTrialsUsed() {
+  return parseInt(localStorage.getItem('postia_trials') || '0', 10);
+}
+
+function useTrial() {
+  var used = getTrialsUsed() + 1;
+  localStorage.setItem('postia_trials', used);
+  updateTrialBadge();
+  return used;
+}
+
+function canGenerate() {
+  return isPaidUser || getTrialsUsed() < MAX_TRIALS;
+}
+
+function updateTrialBadge() {
+  var badge = document.getElementById('trialBadge');
+  if (!badge) return;
+  if (isPaidUser) {
+    badge.style.display = 'none';
+    return;
+  }
+  var left = Math.max(0, MAX_TRIALS - getTrialsUsed());
+  badge.textContent = left + ' essai' + (left === 1 ? '' : 's') + ' gratuit' + (left === 1 ? '' : 's');
+  badge.style.display = 'inline-flex';
+}
 var userEmail = null;
 
 function applyBizLock() {
   document.getElementById('bizLocked').style.display = isPaidUser ? 'none' : 'flex';
   document.getElementById('bizUnlocked').style.display = isPaidUser ? 'block' : 'none';
+  updateTrialBadge();
 }
 
 // ── Session : on résout d'abord le token de session, qui donne l'email ────
@@ -755,6 +785,7 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     });
   }
+  updateTrialBadge();
   loadBiz();
   handleMagicLinkReturn();
   handleStripeReturn();
@@ -819,6 +850,11 @@ function showErr(msg){
 }
 
 async function generate(){
+  if (!canGenerate()) {
+    showPopup();
+    return;
+  }
+
   var business=document.getElementById('business').value.trim();
   var promo=document.getElementById('promo').value.trim();
   var tone=document.getElementById('tone').value;
@@ -897,6 +933,13 @@ async function generate(){
     var clean=text.replace(/```json|```/g,'').trim();
     var parsed=JSON.parse(clean);
     renderPosts(parsed.posts||[]);
+
+    if (!isPaidUser) {
+      var used = useTrial();
+      if (used >= MAX_TRIALS) {
+        setTimeout(function(){ showPopup(); }, 1500);
+      }
+    }
   }catch(e){
     showErr('Erreur: '+(e.message||'Réessaie.'));
   }finally{
