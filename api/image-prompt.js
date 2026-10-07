@@ -13,8 +13,10 @@ export default async function handler(req, res) {
         "Authorization": "Bearer " + process.env.GROQ_API_KEY
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        max_tokens: 200,
+        model: "openai/gpt-oss-120b",
+        max_completion_tokens: 1500,
+        reasoning_effort: "low",
+        include_reasoning: false,
         messages: [{
           role: "user",
           content: `Generate a short image generation prompt in English (max 20 words) for a social media post.
@@ -34,7 +36,7 @@ Rules:
     });
 
     const data = await groqRes.json();
-    const prompt = data.choices?.[0]?.message?.content?.trim() || '';
+    const prompt = (data.choices?.[0]?.message?.content || '').replace(/<think>[\s\S]*?<\/think>/g, '').trim();
 
     return res.status(200).json({ prompt });
 
