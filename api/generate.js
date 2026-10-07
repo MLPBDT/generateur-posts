@@ -44,8 +44,10 @@ VARIÉTÉ ET AUTHENTICITÉ :
         "Authorization": "Bearer " + process.env.GROQ_API_KEY
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        max_tokens: 2500,
+        model: "openai/gpt-oss-120b",
+        max_completion_tokens: 4000,
+        reasoning_effort: "low",
+        include_reasoning: false,
         temperature: 0.9,
         messages: [
           { role: "system", content: systemPrompt },
@@ -57,8 +59,9 @@ VARIÉTÉ ET AUTHENTICITÉ :
     const data = await response.json();
 
     const text = data.choices && data.choices[0] && data.choices[0].message
-      ? data.choices[0].message.content
+      ? (data.choices[0].message.content || "").replace(/<think>[\s\S]*?<\/think>/g, "").trim()
       : "";
+    if (!text) return res.status(502).json({ error: (data.error && data.error.message) || "Réponse IA vide, réessayez." });
 
     return res.status(200).json({ content: [{ text: text }] });
 
