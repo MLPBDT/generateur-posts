@@ -3,9 +3,14 @@
 const P = process.env.POSTIA_DB_PREFIX ?? "po:";
 
 function creds() {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.STORAGE_KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.STORAGE_KV_REST_API_TOKEN;
-  if (!url || !token) throw new Error("Base de données non connectée (KV_REST_API_URL / KV_REST_API_TOKEN manquantes)");
+  // accepte n'importe quel préfixe donné par Vercel lors de la connexion (KV_, STORAGE_KV_, UPSTASH_, FICHEPILOTE_KV_...)
+  const env = process.env;
+  const urlKey = ["KV_REST_API_URL", "UPSTASH_REDIS_REST_URL", "STORAGE_KV_REST_API_URL"].find((k) => env[k])
+    || Object.keys(env).find((k) => /(KV_REST_API_URL|REDIS_REST_URL)$/.test(k) && env[k]);
+  if (!urlKey) throw new Error(`Base de données non connectée (aucune variable *_KV_REST_API_URL). Variables vues : ${Object.keys(env).filter((k) => /KV|REDIS|UPSTASH/i.test(k)).join(", ") || "aucune"}`);
+  const tokenKey = urlKey.replace(/URL$/, "TOKEN");
+  const url = env[urlKey], token = env[tokenKey];
+  if (!token) throw new Error(`Base de données : ${tokenKey} manquante`);
   return { url, token };
 }
 
