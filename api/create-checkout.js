@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { plan } = req.body; // 'starter' ou 'pro'
+    const { plan, ref } = req.body; // 'starter' ou 'pro' ; ref = prospect venu d'une démo
 
     const PRICE_IDS = {
       starter: process.env.STRIPE_PRICE_STARTER,
@@ -27,7 +27,9 @@ export default async function handler(req, res) {
     params.append("line_items[0][price]", priceId);
     params.append("line_items[0][quantity]", "1");
     params.append("subscription_data[trial_period_days]", "7");
-    params.append("success_url", `${origin}/?success=true&plan=${plan}`);
+    // retour Stripe → connexion automatique (sans email) via /api/pro?a=welcome
+    params.append("success_url", `${origin}/api/pro?a=welcome&cs={CHECKOUT_SESSION_ID}`);
+    if (ref && /^[a-z0-9-]{3,80}$/.test(ref)) params.append("client_reference_id", ref);
     params.append("cancel_url", `${origin}/?canceled=true`);
     params.append("allow_promotion_codes", "true");
 

@@ -40,12 +40,19 @@ async function verifyStripeSignature(rawBody, sigHeader, secret) {
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
 }
 
-async function kvSet(key, value) {
-  const url = process.env.KV_REST_API_URL || process.env.STORAGE_KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.STORAGE_KV_REST_API_TOKEN;
-  await fetch(`${url}/set/${encodeURIComponent(key)}/${encodeURIComponent(value)}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+import { kv, logEvent } from "./_lib/kv.js";
+
+async function setStatus(email, status, ref) {
+  const e = email.toLowerCase();
+  await kv.set(`user:${e}`, status);
+  await kv.sadd("customers", e);
+  // prospect devenu client → on arrête les relances
+  const slug = ref || (await kv.get(`prospect-email:${e}`));
+  if (slug && status === "active") {
+    const p = await kv.get(`prospect:${slug}`);
+    if (p) { p.status = "converted"; await kv.set(`prospect:${slug}`, p, 60 * 60 * 24 * 120); }
+  }
+  await logEvent(status === "active" ? "subscribe" : "cancel", { email: e, prospect: slug || null });
 }
 
 export default async function handler(req, res) {
@@ -70,7 +77,7 @@ export default async function handler(req, res) {
       const session = event.data.object;
       const email = session.customer_details?.email || session.customer_email;
       if (email) {
-        await kvSet(`user:${email.toLowerCase()}`, 'active');
+        await setStatus(email, 'active', session.client_reference_id || null);
       }
     }
 
@@ -83,7 +90,7 @@ export default async function handler(req, res) {
       });
       const customer = await customerRes.json();
       if (customer.email) {
-        await kvSet(`user:${customer.email.toLowerCase()}`, 'inactive');
+        await setStatus(customer.email, 'inactive');
       }
     }
 

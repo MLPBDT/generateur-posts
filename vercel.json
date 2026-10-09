@@ -1,7 +1,11 @@
 {
   "functions": {
-    "api/image.js": {
-      "maxDuration": 60
-    }
-  }
+    "api/image.js": { "maxDuration": 60 },
+    "api/pro.js": { "maxDuration": 60 }
+  },
+  "rewrites": [
+    { "source": "/demo/:slug", "destination": "/api/pro?a=demo&slug=:slug" },
+    { "source": "/stop/:t", "destination": "/api/pro?a=stop&t=:t" },
+    { "source": "/admin-pro", "destination": "/api/pro?a=admin" }
+  ]
 }

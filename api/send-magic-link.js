@@ -1,21 +1,7 @@
 // api/send-magic-link.js — Génère un token unique et envoie un email avec le lien de connexion.
 
-async function kvSet(key, value, expirationSeconds) {
-  const url = process.env.KV_REST_API_URL || process.env.STORAGE_KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.STORAGE_KV_REST_API_TOKEN;
-  let endpoint = `${url}/set/${encodeURIComponent(key)}/${encodeURIComponent(value)}`;
-  if (expirationSeconds) endpoint += `/EX/${expirationSeconds}`;
-  await fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
-}
-
-function generateToken() {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let token = '';
-  for (let i = 0; i < 32; i++) {
-    token += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return token;
-}
+import { kv } from "./_lib/kv.js";
+import { randomToken, APP } from "./_lib/util.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -29,13 +15,12 @@ export default async function handler(req, res) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const token = generateToken();
+    const token = randomToken(32);
 
     // Le token expire dans 15 minutes (900 secondes) et est lié à l'email
-    await kvSet(`magic:${token}`, cleanEmail, 900);
+    await kv.set(`magic:${token}`, cleanEmail, 900);
 
-    const origin = req.headers.origin || `https://${req.headers.host}`;
-    const magicLink = `${origin}/api/verify-magic-link?token=${token}`;
+    const magicLink = `${APP()}/api/verify-magic-link?token=${token}`;
 
     const emailHtml = `
       <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px">
@@ -59,7 +44,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "PostIA <onboarding@resend.dev>",
+        from: process.env.EMAIL_FROM || "PostIA <onboarding@resend.dev>",
         to: cleanEmail,
         subject: "Ton lien de connexion PostIA",
         html: emailHtml,
