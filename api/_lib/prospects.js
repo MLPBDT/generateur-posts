@@ -117,7 +117,12 @@ export async function sourceOne(q, log, left) {
     const email = await findEmail(p.website, p.name);
     if (!email) { log(`- ${p.name} : pas d'email public`); continue; }
     if (await isSuppressed(email) || await kv.get(`prospect-email:${email}`) || await contactedElsewhere(email)) { log(`- ${p.name} : déjà contacté`); continue; }
+    // chaînes / groupes : adresse d'un groupe, ou domaine déjà utilisé par un autre établissement
+    const dom = email.split("@")[1];
+    if (/group|groupe|holding/i.test(dom)) { log(`- ${p.name} : groupe (${dom})`); continue; }
+    if (!FREEMAIL.test(email) && (await kv.sismember("email-domains", dom))) { log(`- ${p.name} : plusieurs établissements (${dom})`); continue; }
     if (!(await hasMx(email))) { log(`- ${p.name} : domaine email sans serveur`); continue; }
+    if (!FREEMAIL.test(email)) await kv.sadd("email-domains", dom);
     const slug = `${slugify(`${shortName(p.name)}-${p.city}`) || "commerce"}-${crypto.randomBytes(3).toString("hex")}`;
     await saveProspect({
       slug, placeId: p.placeId, name: p.name, city: p.city, category: p.category, trade: q.trade,
