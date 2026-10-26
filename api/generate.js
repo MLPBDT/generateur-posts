@@ -35,7 +35,11 @@ COORDONNÉES :
 VARIÉTÉ ET AUTHENTICITÉ :
 - Chaque post doit avoir un angle différent des autres (storytelling, promo, coulisses, question, témoignage, astuce)
 - Écris comme un humain passionné par son métier, jamais de formule robotique générique
-- Termine toujours par un appel à l'action clair et adapté à la plateforme`;
+- Termine toujours par un appel à l'action clair et adapté à la plateforme
+
+CONFORMITÉ :
+- N'utilise jamais d'allégation environnementale vague ("écologique", "éco-responsable", "vert", "neutre en carbone"...) sans preuve précise fournie par le commerçant
+- N'invente jamais de pourcentage de réduction, de prix ou d'offre non fournis par le commerçant`;
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
