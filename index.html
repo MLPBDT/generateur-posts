@@ -331,6 +331,17 @@ select.form-input option{background:var(--card)}
     <input type="text" class="form-input" id="promo" placeholder="Ex: -20% ce weekend, nouveau menu disponible..." />
   </div>
 
+  <div class="form-group">
+    <label class="form-label">Temps fort <span style="color:#555;font-weight:400">(optionnel — génère une mini-campagne datée)</span></label>
+    <select class="form-input" id="occasion">
+      <option value="" selected>Aucun — posts du quotidien</option>
+      <option value="black-friday">🛍️ Black Friday — ven. 27/11/2026</option>
+      <option value="noel">🎄 Noël — 25/12/2026</option>
+      <option value="soldes-hiver">🏷️ Soldes d'hiver — 06/01 au 02/02/2027</option>
+      <option value="saint-valentin">❤️ Saint-Valentin — 14/02/2027</option>
+    </select>
+  </div>
+
   <div class="grid2">
     <div class="form-group">
       <label class="form-label">Ton de voix</label>
@@ -883,6 +894,7 @@ async function generate(){
   var count=document.getElementById('count').value;
   var lengthPref=document.getElementById('lengthPref').value;
   var platforms=getPlatforms();
+  var occasion=(document.getElementById('occasion')||{}).value||'';
 
   document.getElementById('err').classList.remove('show');
   if(!business){ showErr('Décris ton activité pour continuer.'); return; }
@@ -902,6 +914,21 @@ async function generate(){
   var extraFields = '';
   if(mode==='ia') extraFields+=', "image_prompt": "..."';
   if(mode==='avec' && photos.length>0) extraFields+=', "photo_index": 0';
+
+  // Temps fort : mini-campagne datée (teasing -> jour J -> dernière chance)
+  var OCCASIONS = {
+    'black-friday': 'Black Friday, vendredi 27 novembre 2026 (offres souvent du lundi 23 au lundi 30 novembre, Cyber Monday)',
+    'noel': 'Noël, vendredi 25 décembre 2026 (idées cadeaux, dernières commandes, horaires des fêtes, réveillon)',
+    'soldes-hiver': 'Soldes d\'hiver, du mercredi 6 janvier au mardi 2 février 2027 (démarque, 2e démarque, derniers jours)',
+    'saint-valentin': 'Saint-Valentin, dimanche 14 février 2027 (cadeaux, réservations, offres duo)'
+  };
+  var occasionLine = '';
+  if (occasion && OCCASIONS[occasion]) {
+    occasionLine = '- Temps fort : '+OCCASIONS[occasion]+'.\n'
+      + 'IMPORTANT — CAMPAGNE : les posts forment une mini-campagne dans l\'ordre chronologique (teasing quelques jours avant, annonce, rappel la veille, jour J, dernière chance). '
+      + 'Pour chaque post ajoute "day": jour de publication conseillé au format "Lun. 23/11". N\'invente aucune réduction : utilise uniquement la promo indiquée, sinon reste sur l\'événement sans chiffre.\n';
+    extraFields+=', "day": "Lun. 23/11"';
+  }
 
   // Fiche entreprise : on ne donne QUE les infos réellement fournies, jamais d'invention
   var biz = getBizData();
@@ -930,7 +957,7 @@ async function generate(){
     + '- Activité détaillée : '+business+'\n'
     + bizLine
     + '- Plateformes : '+platforms.join(', ')+'\n'
-    + promoLine + photoLine + iaLine
+    + promoLine + occasionLine + photoLine + iaLine
     + '- Ton de voix : '+tone+'\n\n'
     + lengthLine
     + bizWarning
@@ -940,7 +967,8 @@ async function generate(){
     + '3. VARIÉTÉ : donne à chaque post un angle différent (storytelling, promo directe, coulisses, question d\'engagement, témoignage, astuce).\n'
     + '4. APPEL À L\'ACTION : termine par un CTA clair adapté à la plateforme (réserver, venir, lien en bio, appeler...).\n'
     + '5. AUTHENTICITÉ : écris comme un humain passionné par son métier, jamais de formule robotique comme "Nous sommes ravis de vous annoncer".\n'
-    + '6. Adapte le style au format propre de chaque plateforme (Instagram chaleureux, LinkedIn pro, TikTok punchy, etc), en respectant la consigne de longueur donnée plus haut.\n\n'
+    + '6. ALLÉGATIONS ENVIRONNEMENTALES : n\'utilise jamais de termes vagues comme "écologique", "éco-responsable", "vert", "neutre en carbone" ou "respectueux de l\'environnement" sans preuve précise fournie par le commerçant (interdits depuis le 27/09/2026).\n'
+    + '7. Adapte le style au format propre de chaque plateforme (Instagram chaleureux, LinkedIn pro, TikTok punchy, etc), en respectant la consigne de longueur donnée plus haut.\n\n'
     + 'Réponds UNIQUEMENT en JSON valide sans markdown :\n'
     + '{"posts":[{"platform":"nom","content":"texte complet avec emojis et hashtags"'+extraFields+'},…]}';
 
@@ -999,7 +1027,7 @@ function renderPosts(posts){
     card.innerHTML=photoHtml+
       '<div class="post-body">'+
         '<div class="post-top">'+
-          '<span class="post-platform">'+escH(post.platform)+'</span>'+
+          '<span class="post-platform">'+escH(post.platform)+(post.day?' · 📅 '+escH(post.day):'')+'</span>'+
           '<div class="post-btns">'+dlBtn+'<button class="btn-sm" onclick="copy(this,\'pt-'+i+'\')">Copier</button></div>'+
         '</div>'+
         '<div class="post-text" id="pt-'+i+'">'+escH(post.content)+'</div>'+
